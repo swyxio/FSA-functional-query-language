@@ -1,0 +1,17 @@
+{
+  "name": "functional-query-language",
+  "version": "1.0.0",
+  "description": "",
+  "main": "table.js",
+  "scripts": {
+    "test": "mocha specs.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-spies": "^0.7.1",
+    "mocha": "^2.4.5"
+  },
+  "dependencies": {}
+}
