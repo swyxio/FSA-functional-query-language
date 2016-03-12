@@ -24,8 +24,10 @@ describe("The FQL runtime", function () {
       });
     });
 
+    // HINT: checkout `fs.readdirSync` (https://nodejs.org/api/fs.html#fs_fs_readdirsync_path)
     xit("tables can scan across all rows using `each`", function () {
       var movieTable = new Table('film-database/movies-table');
+      chai.spy.on(movieTable, 'read');
       var count = 0;
       var fightClub = null;
       movieTable.each(function (row) {
@@ -34,6 +36,7 @@ describe("The FQL runtime", function () {
           fightClub = row;
         }
       });
+      expect(movieTable.read).to.have.been.called.exactly(36);
       expect(count).to.equal(36);
       expect(fightClub).to.eql({
         id: '0007',
@@ -46,7 +49,9 @@ describe("The FQL runtime", function () {
     xit("`FQL` instances (queries) can retrieve all rows from their table", function () {
       var movieTable = new Table('film-database/movies-table');
       var movieQuery = new FQL(movieTable);
+      chai.spy.on(movieTable, 'each');
       var result = movieQuery.exec();
+      expect(movieTable.each).to.have.been.called.exactly(1);
       expect(result).to.eql([
         { id: '0000', name: 'Aliens', year: 1986, rank: 8.2 },
         { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
@@ -505,6 +510,138 @@ describe("The FQL runtime", function () {
       chai.spy.on(joinQuery.plan, 'transformResult');
       joinQuery.exec();
       expect(joinQuery.plan.transformResult).to.have.been.called.exactly(1);
+    });
+
+  });
+
+  describe("#indexing", function () {
+
+    var movieTable, movieQuery, actorTable, actorQuery;
+    beforeEach(function () {
+      movieTable = new Table('film-database/movies-table');
+      movieQuery = new FQL(movieTable);
+      actorTable = new Table('film-database/actors-table');
+      actorQuery = new FQL(actorTable);
+    });
+
+    xit("tables can be indexed by a column", function () {
+      // `.hasIndexTable`
+      expect(movieTable.hasIndexTable('year')).to.equal(false);
+      // `.addIndexTable`
+      movieTable.addIndexTable('year');
+      expect(movieTable.hasIndexTable('year')).to.equal(true);
+      // `.getIndexTable`
+      var indexTable = movieTable.getIndexTable('year');
+      expect(indexTable).to.eql({
+        '1972': [ '0010' ],
+        '1977': [ '0031' ],
+        '1978': [ '0001' ],
+        '1984': [ '0008' ],
+        '1986': [ '0000' ],
+        '1987': [ '0025' ],
+        '1989': [ '0015', '0034' ],
+        '1991': [ '0012' ],
+        '1992': [ '0006', '0027' ],
+        '1994': [ '0026', '0028' ],
+        '1995': [ '0002', '0004' ],
+        '1996': [ '0005' ],
+        '1997': [ '0033' ],
+        '1998': [ '0023' ],
+        '1999': [ '0007', '0017', '0022', '0032' ],
+        '2000': [ '0011', '0018', '0020', '0030' ],
+        '2001': [ '0021', '0029', '0035' ],
+        '2003': [ '0013', '0016', '0019', '0024' ],
+        '2004': [ '0009', '0014' ],
+        '2005': [ '0003' ]
+      });
+    });
+
+    xit("`.each` accepts an optional ID list, and if so will only read those rows", function () {
+      chai.spy.on(movieTable, 'read');
+      var names = [];
+      movieTable.each(
+        // iterator
+        function (row) {
+          names.push(row.name);
+        },
+        // continue condition
+        null,
+        // ID list
+        ['0005', '0032']
+      );
+      expect(names).to.eql([
+        'Fargo', 'Stir of Echoes'
+      ]);
+      expect(movieTable.read).to.have.been.called.exactly(2);
+    });
+
+    xit("where queries take advantage of indexed columns to minimize table reads", function () {
+      // non-indexed query
+      chai.spy.on(movieTable, 'read');
+      var nonIndexedResult = new FQL(movieTable)
+      .where({year: 1999})
+      .exec();
+      expect(movieTable.read).to.have.been.called.exactly(36);
+      // indexed query
+      movieTable.addIndexTable('year');
+      chai.spy.on(movieTable, 'read');
+      var indexedResult = new FQL(movieTable)
+      .where({year: 1999})
+      .exec();
+      expect(movieTable.read).to.have.been.called.exactly(4);
+      // results should still be the same
+      expect(nonIndexedResult).to.eql(indexedResult);
+    });
+
+    xit("produces results more quickly for sparse finds", function () {
+      // non-indexed
+      console.time('non-indexed query');
+      var nonIndexedResult = new FQL(actorTable).where({last_name: 'Miller'}).exec();
+      console.timeEnd('non-indexed query');
+      // indexed
+      actorTable.addIndexTable('last_name');
+      console.time('indexed query');
+      var indexedResult = new FQL(actorTable).where({last_name: 'Miller'}).exec();
+      console.timeEnd('indexed query');
+      // check out the console!
+      expect(nonIndexedResult).to.eql(indexedResult);
+    });
+
+    xit("plans hold the query's ID getters", function () {
+      expect(movieQuery.plan).to.have.property('idGetters');
+      expect(movieQuery.plan.idGetters).to.eql([]);
+      movieTable.addIndexTable('rank');
+      var indexedQuery = movieQuery.where({rank: 7.5});
+      expect(indexedQuery.plan.idGetters).to.have.length(1);
+      expect(indexedQuery.plan.idGetters[0]).to.be.instanceOf(Function);
+    });
+
+    xit("plans combine their ID getters in `.getIds`", function () {
+      var plan = new Plan();
+      // without any indexed stuff
+      expect(plan.getIds()).to.be.falsey;
+      // add an ID getter
+      plan.idGetters.push(function () {
+        return ['0001', '0003', '0005', '0007'];
+      });
+      expect(plan.getIds()).to.eql(['0001', '0003', '0005', '0007']);
+      // add another ID getter
+      plan.idGetters.push(function () {
+        return ['0003', '0004', '0005'];
+      });
+      // `.getIds` returns the union of the ID getter results
+      expect(plan.getIds()).to.eql(['0003', '0005']);
+    });
+
+    xit("queries use their plan's `.getIds` when executing", function () {
+      movieTable.addIndexTable('year');
+      var indexedQuery = movieQuery
+      .where({
+        year: 2000
+      });
+      chai.spy.on(indexedQuery.plan, 'getIds');
+      indexedQuery.exec();
+      expect(indexedQuery.plan.getIds).to.have.been.called.exactly(1);
     });
 
   });
