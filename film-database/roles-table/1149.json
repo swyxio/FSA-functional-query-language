@@ -1,5 +1,5 @@
 {
-  "actor_id": "0010",
-  "movie_id": "0021",
+  "actor_id": 10,
+  "movie_id": 21,
   "role": "Police Officer"
 }

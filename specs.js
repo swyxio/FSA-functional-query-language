@@ -12,12 +12,26 @@ describe("The FQL runtime", function () {
 
   describe("bedrock", function () {
 
+    xit("`Table.toFilename` converts an ID to a four-digit zero-padded filename", function () {
+      expect(Table.toFilename(3895)).to.equal('3895.json');
+      expect(Table.toFilename(216)).to.equal('0216.json');
+      expect(Table.toFilename(42)).to.equal('0042.json');
+      expect(Table.toFilename(7)).to.equal('0007.json');
+    });
+
+    xit("`Table.toId` converts an filename to an ID (number)", function () {
+      expect(Table.toId('4444.json')).to.equal(4444);
+      expect(Table.toId('0333.json')).to.equal(333);
+      expect(Table.toId('0022.json')).to.equal(22);
+      expect(Table.toId('0001.json')).to.equal(1);
+    });
+
     // HINT: check out `JSON.parse` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
     xit("`Table` instances (tables) can read from a folder, given an ID", function () {
       var movieTable = new Table('film-database/movies-table');
-      var result = movieTable.read('0002');
+      var result = movieTable.read(2);
       expect(result).to.eql({
-        id: '0002',
+        id: 2,
         name: 'Apollo 13',
         year: 1995,
         rank: 7.5
@@ -39,7 +53,7 @@ describe("The FQL runtime", function () {
       expect(movieTable.read).to.have.been.called.exactly(36);
       expect(count).to.equal(36);
       expect(fightClub).to.eql({
-        id: '0007',
+        id: 7,
         name: 'Fight Club',
         year: 1999,
         rank: 8.5
@@ -53,42 +67,42 @@ describe("The FQL runtime", function () {
       var result = movieQuery.exec();
       expect(movieTable.each).to.have.been.called.exactly(1);
       expect(result).to.eql([
-        { id: '0000', name: 'Aliens', year: 1986, rank: 8.2 },
-        { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
-        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: '0003', name: 'Batman Begins', year: 2005, rank: null },
-        { id: '0004', name: 'Braveheart', year: 1995, rank: 8.3 },
-        { id: '0005', name: 'Fargo', year: 1996, rank: 8.2 },
-        { id: '0006', name: 'Few Good Men, A', year: 1992, rank: 7.5 },
-        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: '0008', name: 'Footloose', year: 1984, rank: 5.8 },
-        { id: '0009', name: 'Garden State', year: 2004, rank: 8.3 },
-        { id: '0010', name: 'Godfather, The', year: 1972, rank: 9 },
-        { id: '0011', name: 'Hollow Man', year: 2000, rank: 5.3 },
-        { id: '0012', name: 'JFK', year: 1991, rank: 7.8 },
-        { id: '0013', name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
-        { id: '0014', name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
-        { id: '0015', name: 'Little Mermaid, The', year: 1989, rank: 7.3 },
-        { id: '0016', name: 'Lost in Translation', year: 2003, rank: 8 },
-        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 },
-        { id: '0018', name: 'Memento', year: 2000, rank: 8.7 },
-        { id: '0019', name: 'Mystic River', year: 2003, rank: 8.1 },
-        { id: '0020', name: 'O Brother, Where Art Thou?', year: 2000, rank: 7.8 },
-        { id: '0021', name: 'Ocean\'s Eleven', year: 2001, rank: 7.5 },
-        { id: '0022', name: 'Office Space', year: 1999, rank: 7.6 },
-        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 },
-        { id: '0024', name: 'Pirates of the Caribbean', year: 2003, rank: null },
-        { id: '0025', name: 'Planes, Trains & Automobiles', year: 1987, rank: 7.2 },
-        { id: '0026', name: 'Pulp Fiction', year: 1994, rank: 8.7 },
-        { id: '0027', name: 'Reservoir Dogs', year: 1992, rank: 8.3 },
-        { id: '0028', name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1 },
-        { id: '0030', name: 'Snatch.', year: 2000, rank: 7.9 },
-        { id: '0031', name: 'Star Wars', year: 1977, rank: 8.8 },
-        { id: '0032', name: 'Stir of Echoes', year: 1999, rank: 7 },
-        { id: '0033', name: 'Titanic', year: 1997, rank: 6.9 },
-        { id: '0034', name: 'UHF', year: 1989, rank: 6.6 },
-        { id: '0035', name: 'Vanilla Sky', year: 2001, rank: 6.9 }
+        { id: 0, name: 'Aliens', year: 1986, rank: 8.2 },
+        { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },
+        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: 3, name: 'Batman Begins', year: 2005, rank: null },
+        { id: 4, name: 'Braveheart', year: 1995, rank: 8.3 },
+        { id: 5, name: 'Fargo', year: 1996, rank: 8.2 },
+        { id: 6, name: 'Few Good Men, A', year: 1992, rank: 7.5 },
+        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: 8, name: 'Footloose', year: 1984, rank: 5.8 },
+        { id: 9, name: 'Garden State', year: 2004, rank: 8.3 },
+        { id: 10, name: 'Godfather, The', year: 1972, rank: 9 },
+        { id: 11, name: 'Hollow Man', year: 2000, rank: 5.3 },
+        { id: 12, name: 'JFK', year: 1991, rank: 7.8 },
+        { id: 13, name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
+        { id: 14, name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
+        { id: 15, name: 'Little Mermaid, The', year: 1989, rank: 7.3 },
+        { id: 16, name: 'Lost in Translation', year: 2003, rank: 8 },
+        { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 },
+        { id: 18, name: 'Memento', year: 2000, rank: 8.7 },
+        { id: 19, name: 'Mystic River', year: 2003, rank: 8.1 },
+        { id: 20, name: 'O Brother, Where Art Thou?', year: 2000, rank: 7.8 },
+        { id: 21, name: 'Ocean\'s Eleven', year: 2001, rank: 7.5 },
+        { id: 22, name: 'Office Space', year: 1999, rank: 7.6 },
+        { id: 23, name: 'Pi', year: 1998, rank: 7.5 },
+        { id: 24, name: 'Pirates of the Caribbean', year: 2003, rank: null },
+        { id: 25, name: 'Planes, Trains & Automobiles', year: 1987, rank: 7.2 },
+        { id: 26, name: 'Pulp Fiction', year: 1994, rank: 8.7 },
+        { id: 27, name: 'Reservoir Dogs', year: 1992, rank: 8.3 },
+        { id: 28, name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1 },
+        { id: 30, name: 'Snatch.', year: 2000, rank: 7.9 },
+        { id: 31, name: 'Star Wars', year: 1977, rank: 8.8 },
+        { id: 32, name: 'Stir of Echoes', year: 1999, rank: 7 },
+        { id: 33, name: 'Titanic', year: 1997, rank: 6.9 },
+        { id: 34, name: 'UHF', year: 1989, rank: 6.6 },
+        { id: 35, name: 'Vanilla Sky', year: 2001, rank: 6.9 }
       ]);
     });
 
@@ -138,10 +152,10 @@ describe("The FQL runtime", function () {
       expect(count).to.equal(4);
       var result = limitQuery.exec();
       expect(result).to.eql([
-        { id: '0000', name: 'Aliens', year: 1986, rank: 8.2 },
-        { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
-        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: '0003', name: 'Batman Begins', year: 2005, rank: null }
+        { id: 0, name: 'Aliens', year: 1986, rank: 8.2 },
+        { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },
+        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: 3, name: 'Batman Begins', year: 2005, rank: null }
       ]);
     });
 
@@ -234,13 +248,13 @@ describe("The FQL runtime", function () {
     xit("plans combine their row transformers in `.transformRow`", function () {
       var plan = new Plan();
       var exampleRow = {
-        id: '0028',
+        id: 28,
         name: 'Shawshank Redemption, The',
         year: 1994,
         rank: 9
       };
       // without any row transformers
-      expect(plan.transformRow(exampleRow)).to.eql({ id: '0028', name: 'Shawshank Redemption, The', year: 1994, rank: 9 });
+      expect(plan.transformRow(exampleRow)).to.eql({ id: 28, name: 'Shawshank Redemption, The', year: 1994, rank: 9 });
       // add a row transformer
       plan.rowTransformers.push(function (row) {
         return {
@@ -276,7 +290,7 @@ describe("The FQL runtime", function () {
       });
       var resultB = new FQL(movieTable).select('rank', 'id', 'year').exec();
       expect(resultB).to.have.length(36);
-      expect(resultB[0]).to.eql({ id: '0000', year: 1986, rank: 8.2 });
+      expect(resultB[0]).to.eql({ id: 0, year: 1986, rank: 8.2 });
       resultB.forEach(function (row) {
         expect(row).to.have.property('rank');
         expect(row).to.have.property('id');
@@ -298,14 +312,14 @@ describe("The FQL runtime", function () {
     xit("given criteria, queries can narrow the result set", function () {
       var resultA = new FQL(movieTable).where({name: 'Shrek'}).exec();
       expect(resultA).to.eql([
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1 }
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1 }
       ]);
       var resultB = new FQL(movieTable).where({year: 1999}).exec();
       expect(resultB).to.eql([
-        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 },
-        { id: '0022', name: 'Office Space', year: 1999, rank: 7.6 },
-        { id: '0032', name: 'Stir of Echoes', year: 1999, rank: 7 }
+        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 },
+        { id: 22, name: 'Office Space', year: 1999, rank: 7.6 },
+        { id: 32, name: 'Stir of Echoes', year: 1999, rank: 7 }
       ]);
     });
 
@@ -320,7 +334,7 @@ describe("The FQL runtime", function () {
     xit("plans combine their row matchers in `.matchRow`", function () {
       var plan = new Plan();
       var exampleRow = {
-        id: '0028',
+        id: 28,
         name: 'Shawshank Redemption, The',
         year: 1994,
         rank: 9
@@ -360,12 +374,12 @@ describe("The FQL runtime", function () {
 
     xit("works with multiple fields", function () {
       var result = movieQuery.where({
-        year: 1999,
-        rank: 8.5
+        rank: 8.5,
+        year: 1999
       }).exec();
       expect(result).to.eql([
-        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 }
+        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 }
       ]);
     });
 
@@ -377,21 +391,21 @@ describe("The FQL runtime", function () {
       }).exec();
       // movies without the letter 'e' in their name
       expect(result).to.eql([
-        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: '0005', name: 'Fargo', year: 1996, rank: 8.2 },
-        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: '0011', name: 'Hollow Man', year: 2000, rank: 5.3 },
-        { id: '0012', name: 'JFK', year: 1991, rank: 7.8 },
-        { id: '0013', name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
-        { id: '0014', name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
-        { id: '0016', name: 'Lost in Translation', year: 2003, rank: 8 },
-        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 },
-        { id: '0026', name: 'Pulp Fiction', year: 1994, rank: 8.7 },
-        { id: '0030', name: 'Snatch.', year: 2000, rank: 7.9 },
-        { id: '0031', name: 'Star Wars', year: 1977, rank: 8.8 },
-        { id: '0033', name: 'Titanic', year: 1997, rank: 6.9 },
-        { id: '0034', name: 'UHF', year: 1989, rank: 6.6 },
-        { id: '0035', name: 'Vanilla Sky', year: 2001, rank: 6.9 }
+        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: 5, name: 'Fargo', year: 1996, rank: 8.2 },
+        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: 11, name: 'Hollow Man', year: 2000, rank: 5.3 },
+        { id: 12, name: 'JFK', year: 1991, rank: 7.8 },
+        { id: 13, name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
+        { id: 14, name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
+        { id: 16, name: 'Lost in Translation', year: 2003, rank: 8 },
+        { id: 23, name: 'Pi', year: 1998, rank: 7.5 },
+        { id: 26, name: 'Pulp Fiction', year: 1994, rank: 8.7 },
+        { id: 30, name: 'Snatch.', year: 2000, rank: 7.9 },
+        { id: 31, name: 'Star Wars', year: 1977, rank: 8.8 },
+        { id: 33, name: 'Titanic', year: 1997, rank: 6.9 },
+        { id: 34, name: 'UHF', year: 1989, rank: 6.6 },
+        { id: 35, name: 'Vanilla Sky', year: 2001, rank: 6.9 }
       ]);
     });
 
@@ -401,10 +415,10 @@ describe("The FQL runtime", function () {
         year: function (yearVal) { return yearVal < 2000; }
       }).exec();
       expect(result).to.eql([
-        { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
-        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: '0006', name: 'Few Good Men, A', year: 1992, rank: 7.5 },
-        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 }
+        { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },
+        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: 6, name: 'Few Good Men, A', year: 1992, rank: 7.5 },
+        { id: 23, name: 'Pi', year: 1998, rank: 7.5 }
       ]);
     });
 
@@ -439,31 +453,31 @@ describe("The FQL runtime", function () {
       })
       .exec();
       expect(result).to.eql([
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0001', movie_id: '0029', role: 'Duloc Mascot' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0031', movie_id: '0029', role: 'Merry Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0090', movie_id: '0029', role: 'Bishop' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0097', movie_id: '0029', role: 'Merry Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0106', movie_id: '0029', role: 'Baby Bear' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0182', movie_id: '0029', role: 'Pinocchio/Three Pigs' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0202', movie_id: '0029', role: 'Monsieur Hood' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0278', movie_id: '0029', role: 'Captain of Guards' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0318', movie_id: '0029', role: 'Ogre Hunter' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0434', movie_id: '0029', role: 'Peter Pan' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0476', movie_id: '0029', role: 'Merry Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0706', movie_id: '0029', role: 'Blind Mouse/Thelonious' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0771', movie_id: '0029', role: 'Lord Farquaad of Duloc' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0906', movie_id: '0029', role: 'Geppetto/Magic Mirror' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0928', movie_id: '0029', role: 'Donkey' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0935', movie_id: '0029', role: 'Shrek/Blind Mouse/Narrator' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1013', movie_id: '0029', role: 'Ogre Hunter' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1086', movie_id: '0029', role: 'Merry Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1221', movie_id: '0029', role: 'Blind Mouse' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1345', movie_id: '0029', role: 'Gingerbread Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1348', movie_id: '0029', role: 'Merry Man' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1482', movie_id: '0029', role: 'Wrestling Fan' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1561', movie_id: '0029', role: 'Princess Fiona' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1598', movie_id: '0029', role: 'Old Woman' },
-        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1602', movie_id: '0029', role: 'Additional Voices' }
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1, movie_id: 29, role: 'Duloc Mascot' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 31, movie_id: 29, role: 'Merry Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 90, movie_id: 29, role: 'Bishop' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 97, movie_id: 29, role: 'Merry Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 106, movie_id: 29, role: 'Baby Bear' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 182, movie_id: 29, role: 'Pinocchio/Three Pigs' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 202, movie_id: 29, role: 'Monsieur Hood' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 278, movie_id: 29, role: 'Captain of Guards' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 318, movie_id: 29, role: 'Ogre Hunter' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 434, movie_id: 29, role: 'Peter Pan' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 476, movie_id: 29, role: 'Merry Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 706, movie_id: 29, role: 'Blind Mouse/Thelonious' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 771, movie_id: 29, role: 'Lord Farquaad of Duloc' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 906, movie_id: 29, role: 'Geppetto/Magic Mirror' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 928, movie_id: 29, role: 'Donkey' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 935, movie_id: 29, role: 'Shrek/Blind Mouse/Narrator' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1013, movie_id: 29, role: 'Ogre Hunter' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1086, movie_id: 29, role: 'Merry Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1221, movie_id: 29, role: 'Blind Mouse' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1345, movie_id: 29, role: 'Gingerbread Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1348, movie_id: 29, role: 'Merry Man' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1482, movie_id: 29, role: 'Wrestling Fan' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1561, movie_id: 29, role: 'Princess Fiona' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1598, movie_id: 29, role: 'Old Woman' },
+        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1602, movie_id: 29, role: 'Additional Voices' }
       ]);
     });
 
@@ -484,13 +498,13 @@ describe("The FQL runtime", function () {
     xit("plans combine their result transformers in `.transformResult`", function () {
       var plan = new Plan();
       var exampleResult = [
-        { id: '0028', name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
-        { id: '0012', name: 'JFK', year: 1991, rank: 7.8 }
+        { id: 28, name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
+        { id: 12, name: 'JFK', year: 1991, rank: 7.8 }
       ];
       // without any result transformers
       expect(plan.transformResult(exampleResult)).to.eql([
-        { id: '0028', name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
-        { id: '0012', name: 'JFK', year: 1991, rank: 7.8 }
+        { id: 28, name: 'Shawshank Redemption, The', year: 1994, rank: 9 },
+        { id: 12, name: 'JFK', year: 1991, rank: 7.8 }
       ]);
       // add a result transformer
       plan.resultTransformers.push(function (result) {
@@ -533,26 +547,26 @@ describe("The FQL runtime", function () {
       // `.getIndexTable`
       var indexTable = movieTable.getIndexTable('year');
       expect(indexTable).to.eql({
-        '1972': [ '0010' ],
-        '1977': [ '0031' ],
-        '1978': [ '0001' ],
-        '1984': [ '0008' ],
-        '1986': [ '0000' ],
-        '1987': [ '0025' ],
-        '1989': [ '0015', '0034' ],
-        '1991': [ '0012' ],
-        '1992': [ '0006', '0027' ],
-        '1994': [ '0026', '0028' ],
-        '1995': [ '0002', '0004' ],
-        '1996': [ '0005' ],
-        '1997': [ '0033' ],
-        '1998': [ '0023' ],
-        '1999': [ '0007', '0017', '0022', '0032' ],
-        '2000': [ '0011', '0018', '0020', '0030' ],
-        '2001': [ '0021', '0029', '0035' ],
-        '2003': [ '0013', '0016', '0019', '0024' ],
-        '2004': [ '0009', '0014' ],
-        '2005': [ '0003' ]
+        1972: [ 10 ],
+        1977: [ 31 ],
+        1978: [ 1 ],
+        1984: [ 8 ],
+        1986: [ 0 ],
+        1987: [ 25 ],
+        1989: [ 15, 34 ],
+        1991: [ 12 ],
+        1992: [ 6, 27 ],
+        1994: [ 26, 28 ],
+        1995: [ 2, 4 ],
+        1996: [ 5 ],
+        1997: [ 33 ],
+        1998: [ 23 ],
+        1999: [ 7, 17, 22, 32 ],
+        2000: [ 11, 18, 20, 30 ],
+        2001: [ 21, 29, 35 ],
+        2003: [ 13, 16, 19, 24 ],
+        2004: [ 9, 14 ],
+        2005: [ 3 ]
       });
     });
 
@@ -567,7 +581,7 @@ describe("The FQL runtime", function () {
         // continue condition
         null,
         // ID list
-        ['0005', '0032']
+        [5, 32]
       );
       expect(names).to.eql([
         'Fargo', 'Stir of Echoes'
@@ -622,15 +636,15 @@ describe("The FQL runtime", function () {
       expect(plan.getIds()).to.be.falsey;
       // add an ID getter
       plan.idGetters.push(function () {
-        return ['0001', '0003', '0005', '0007'];
+        return [1, 3, 5, 7];
       });
-      expect(plan.getIds()).to.eql(['0001', '0003', '0005', '0007']);
+      expect(plan.getIds()).to.eql([1, 3, 5, 7]);
       // add another ID getter
       plan.idGetters.push(function () {
-        return ['0003', '0004', '0005'];
+        return [3, 4, 5];
       });
       // `.getIds` returns the union of the ID getter results
-      expect(plan.getIds()).to.eql(['0003', '0005']);
+      expect(plan.getIds()).to.eql([3, 5]);
     });
 
     xit("queries use their plan's `.getIds` when executing", function () {

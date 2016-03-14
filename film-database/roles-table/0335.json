@@ -1,5 +1,5 @@
 {
-  "actor_id": "0123",
-  "movie_id": "0006",
+  "actor_id": 123,
+  "movie_id": 6,
   "role": "Cdr. Gibbs"
 }
