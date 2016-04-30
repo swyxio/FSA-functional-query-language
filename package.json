@@ -4,7 +4,7 @@
   "description": "",
   "main": "table.js",
   "scripts": {
-    "test": "mocha specs.js"
+    "test": "mocha specs/*.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,7 @@
     "chai-spies": "^0.7.1",
     "mocha": "^2.4.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "rimraf": "^2.5.2"
+  }
 }
