@@ -63,22 +63,6 @@ describe("Part IV: (w)indexing", function () {
     });
   });
 
-  xit("plans can `getIndexedCriteria` given a table", function () {
-    expect(Plan.prototype.getIndexedCriteria).to.be.a('function');
-  });
-
-  xit("plans can `getIndexedIds` given a table", function () {
-    expect(Plan.prototype.getIndexedIds).to.be.a('function');
-  });
-
-  xit("plans can `getNonIndexedCriteria` given a table", function () {
-    expect(Plan.prototype.getNonIndexedCriteria).to.be.a('function');
-  });
-
-  xit("a plan only `matchesRow` based on non-indexed criteria", function () {
-    // ...
-  });
-
   xit("where queries take advantage of indexed columns to minimize table reads", function () {
     // non-indexed query
     chai.spy.on(movieTable, 'read');
