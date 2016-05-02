@@ -50,7 +50,7 @@ describe("Part III: putting the able in table", function () {
       testTable.drop();
       expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
       testTable = new Table('test-db/test-table');
-      fs.writeFile('test-db/test-table/0404.json', '"{}"');
+      fs.writeFileSync('test-db/test-table/0404.json', '"{}"');
       testTable.drop();
       expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
     });

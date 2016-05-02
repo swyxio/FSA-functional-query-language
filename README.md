@@ -10,8 +10,8 @@ At the start, all but the first spec is pending, as specified by `xit`. As you w
 
 ## Guidance
 
-The role of `Table` instances is to handle the persistence. In this case that means dealing with the file system, because each table will be a folder where each of its rows is stored in a json file. A `Table` instance also exposes an `.each` method for `FQL` queries to utilize.
+The role of `Table` instances is to handle the persistence. In this case that means dealing with the file system, because each table will be a folder where each of its rows is stored in a json file. A `Table` instance also exposes a `.read` method for `FQL` queries to utilize.
 
-The role of `FQL` instances is to build up a multi-faceted query for a particular table and then return an array of the results when executed with `.exec`. Essentially a query object contains information about *what to do later*. Only during `.exec` will this information be applied to *actually running* the query. It does so by using its table's `.each` method.
+The role of `FQL` instances is to build up a multi-faceted query for a particular table and then return an array of the results when executed with `.get`. Essentially a query object contains information about *what to do later*. Only during `.get` will this information be applied to *actually running* the query. It does so by using its table's `.read` and `.getRowIds` methods.
 
-The role of `Plan` instances is to simplify the role of queries. Each query should have a plan that contains all of the functions the query is "deferring" until its execution. The plan is also responsible for combining these functions in the right way, so that it abstracts some of what a query needs to do when executed.
+The role of `Plan` instances is to simplify the role of queries. Each query should have a plan that contains all of the infromation the query should "remember" for later (when it executes). The plan is also responsible for abstracting some of what a query needs to do when executed. For example, it has `.withinLimit` method that returns whether or not a possible result is still within the plan's stored limit.
