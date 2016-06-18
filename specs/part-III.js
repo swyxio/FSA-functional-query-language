@@ -9,6 +9,7 @@ var expect = require('chai').expect;
 
 var Table = require('../source/table');
 var FQL = require('../source/fql');
+var Plan = require('../source/plan');
 
 // --------------------------------------------------------
 //  _______  _______  ______    _______    ___   ___   ___  
@@ -21,173 +22,114 @@ var FQL = require('../source/fql');
 //
 // --------------------------------------------------------
 
-describe("Part III: putting the able in table", function () {
+describe("Part III: (w)indexing", function () {
 
+  var movieTable, movieQuery, actorTable;
   beforeEach(function () {
-    fs.mkdirSync('test-db');
+    movieTable = new Table('film-database/movies-table');
+    movieQuery = new FQL(movieTable);
+    actorTable = new Table('film-database/actors-table');
   });
 
-  afterEach(function () {
-    rmrf.sync('test-db');
+  function removeNonDataTables () {
+    var allowed = ['movies-table', 'actors-table', 'roles-table'];
+    fs.readdirSync('film-database').forEach(function (path) {
+      if (allowed.indexOf(path) == -1) {
+        rmrf.sync('film-database/' + path);
+      }
+    });
+  }
+
+  before(removeNonDataTables)
+
+  afterEach(removeNonDataTables);
+
+  xit("tables can be indexed by a column", function () {
+    // `hasIndexTable`
+    expect(Table.prototype.hasIndexTable).to.be.a('function');
+    expect(movieTable.hasIndexTable('year')).to.equal(false);
+    // `addIndexTable`
+    expect(Table.prototype.addIndexTable).to.be.a('function');
+    movieTable.addIndexTable('year');
+    expect(movieTable.hasIndexTable('year')).to.equal(true);
+    // `getIndexTable`
+    expect(Table.prototype.getIndexTable).to.be.a('function');
+    var indexTable = movieTable.getIndexTable('year');
+    expect(indexTable).to.eql({
+      1972: [ 10 ],
+      1977: [ 31 ],
+      1978: [ 1 ],
+      1984: [ 8 ],
+      1986: [ 0 ],
+      1987: [ 25 ],
+      1989: [ 15, 34 ],
+      1991: [ 12 ],
+      1992: [ 6, 27 ],
+      1994: [ 26, 28 ],
+      1995: [ 2, 4 ],
+      1996: [ 5 ],
+      1997: [ 33 ],
+      1998: [ 23 ],
+      1999: [ 7, 17, 22, 32 ],
+      2000: [ 11, 18, 20, 30 ],
+      2001: [ 21, 29, 35 ],
+      2003: [ 13, 16, 19, 24 ],
+      2004: [ 9, 14 ],
+      2005: [ 3 ]
+    });
   });
 
-  describe("table existence", function () {
-
-    xit("creates a folder for a new table if no such folder exists yet", function () {
-      new Table('test-db/test-table');
-      // a corresponding path should now exist
-      var exists = fs.existsSync('test-db/test-table');
-      expect(exists).to.equal(true);
-      // that path should point to a directory
-      var stats = fs.statSync('test-db/test-table');
-      expect(stats.isDirectory()).to.equal(true);
-    });
-
-    // HINT: check out `rimraf.sync` (https://github.com/isaacs/rimraf#rimrafsync)
-    xit("`drop` deletes the whole table (folder)", function () {
-      expect(Table.prototype.drop).to.be.a('function');
-      var testTable = new Table('test-db/test-table');
-      testTable.drop();
-      expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
-      testTable = new Table('test-db/test-table');
-      fs.writeFileSync('test-db/test-table/0404.json', '"{}"');
-      testTable.drop();
-      expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
-    });
-
+  xit("where queries take advantage of indexed columns to minimize table reads", function () {
+    // non-indexed query
+    chai.spy.on(movieTable, 'read');
+    var nonIndexedResult = new FQL(movieTable)
+    .where({year: 1999})
+    .get();
+    expect(movieTable.read).to.have.been.called.exactly(36);
+    // indexed query
+    movieTable.addIndexTable('year');
+    chai.spy.on(movieTable, 'read');
+    var indexedResult = new FQL(movieTable)
+    .where({year: 1999})
+    .get();
+    expect(movieTable.read).to.have.been.called.exactly(4);
+    // results should still be the same
+    expect(nonIndexedResult).to.eql(indexedResult);
   });
 
-  describe("row existence", function () {
+  function nanosecondsOf (time) {
+    return time[0] * 1e9 + time[1]; 
+  }
 
-    var testTable;
-    beforeEach(function () {
-      testTable = new Table('test-db/test-table');
-    });
+  function logTime (label, time) {
+    console.log(label, nanosecondsOf(time)/1e6, 'ms');
+  }
 
-    xit("`read` will retrieve a row added after table creation", function () {
-      var resultBefore = testTable.read(456);
-      expect(resultBefore).to.equal(undefined);
-      fs.writeFileSync('test-db/test-table/0456.json', '{"letter":"F","isFor":"functional"}');
-      var resultAfter = testTable.read(456);
-      expect(resultAfter).to.eql({letter: 'F', isFor: 'functional'});
-    });
+  function pad (str) {
+    return '    ' + str;
+  }
 
-    // HINT: check out `fs.unlink` (https://nodejs.org/api/fs.html#fs_fs_unlinksync_path)
-    xit("`erase` removes a particular row", function () {
-      expect(Table.prototype.erase).to.be.a('function');
-      fs.writeFileSync('test-db/test-table/0987.json', '{"name":"Roosevelt Franklin","role":"student"}');
-      testTable.erase(987);
-      expect(fs.existsSync('test-db/test-table/0987.json')).to.equal(false);
-    });
-
-    // HINT: check out `JSON.stringify` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
-    xit("`write` stores the given data as a JSON string in a file of the given name", function () {
-      expect(Table.prototype.write).to.be.a('function');
-      testTable.write(123, {name: 'Oscar', role: 'grouch'});
-      expect(fs.readdirSync('test-db/test-table')).to.eql(['0123.json']);
-      var fileStr = fs.readFileSync('test-db/test-table/0123.json').toString();
-      expect(fileStr).to.equal('{"name":"Oscar","role":"grouch"}');
-    });
-
-    xit("`update` sets particular columns for a particular row", function () {
-      expect(Table.prototype.update).to.be.a('function');
-      fs.writeFileSync('test-db/test-table/0789.json', '{"title":"Sesame Street","network":"PBS"}');
-      testTable.update(789, {network: 'HBO', coCreator: 'Joan Ganz Cooney'});
-      var fileStr = fs.readFileSync('test-db/test-table/0789.json').toString();
-      expect(fileStr).to.equal('{"title":"Sesame Street","network":"HBO","coCreator":"Joan Ganz Cooney"}');
-    });
-
-    xit("`insert` writes the row data using an auto-incrementing ID", function () {
-      expect(Table.prototype.insert).to.be.a('function');
-      testTable.insert({song: 'One of These Things', by: 'Joe Raposo, Jon Stone, & Bruce Hart'});
-      testTable.insert({song: 'Rubber Duckie', by: 'Jeff Moss'});
-      expect(fs.readdirSync('test-db/test-table')).to.eql(['0000.json', '0001.json']);
-      var fileStrA = fs.readFileSync('test-db/test-table/0000.json').toString();
-      expect(fileStrA).to.equal('{"song":"One of These Things","by":"Joe Raposo, Jon Stone, & Bruce Hart","id":0}');
-      var fileStrB = fs.readFileSync('test-db/test-table/0001.json').toString();
-      expect(fileStrB).to.equal('{"song":"Rubber Duckie","by":"Jeff Moss","id":1}');
-    });
-
-    function createFakeTableWithData () {
-      rmrf.sync('test-db/test-table');
-      fs.mkdirSync('test-db/test-table');
-      fs.writeFileSync('test-db/test-table/0002.json', '{"a":"alpha","id":2}');
-      fs.writeFileSync('test-db/test-table/0003.json', '{"b":"bravo","id":3}');
-      fs.writeFileSync('test-db/test-table/0009.json', '{"c":"charlie","id":9}');
-    }
-    xit("can write to and read from an already-existing table (folder)", function () {
-      createFakeTableWithData();
-      var table = new Table('test-db/test-table');
-      var resultBefore = [table.read(2), table.read(3), table.read(9)];
-      expect(resultBefore).to.eql([
-        {a:'alpha',id:2},
-        {b:'bravo',id:3},
-        {c:'charlie',id:9}
-      ]);
-      table.insert({d:'delta'});
-      var resultAfter = [table.read(2), table.read(3), table.read(9), table.read(10)];
-      expect(resultAfter).to.eql([
-        {a:'alpha',id:2},
-        {b:'bravo',id:3},
-        {c:'charlie',id:9},
-        {d:'delta',id:10} // auto-incrementer counts up from the previous maximum
-      ]);
-    });
-
-  });
-
-  describe("enhanced queries", function () {
-
-    var originals = {}, wouldHaveBeenWritten, wouldHaveBeenErased;
-    beforeEach(function () {
-      originals.write = Table.prototype.write;
-      originals.erase = Table.prototype.erase;
-      wouldHaveBeenWritten = {};
-      Table.prototype.write = function (id, data) {
-        wouldHaveBeenWritten[id] = data;
-      };
-      wouldHaveBeenErased = {};
-      Table.prototype.erase = function (id) {
-        wouldHaveBeenErased[id] = true;
-      };
-    });
-    afterEach(function () {
-      Table.prototype.write = originals.write;
-      Table.prototype.erase = originals.erase;
-    });
-
-    var movieTable, movieQuery;
-    beforeEach(function () {
-      movieTable = new Table('film-database/movies-table');
-      movieQuery = new FQL(movieTable);
-    });
-
-    xit("`delete` removes any rows specified by the query", function () {
-      expect(FQL.prototype.delete).to.be.a('function');
-      chai.spy.on(movieTable, 'erase');
-      movieQuery.where({year: 1999}).delete();
-      expect(movieTable.erase).to.have.been.called.exactly(4);
-      // wouldHaveBeenErased is internally set up by specs (see above)
-      // it keeps track of what movie ids get erased by Table.prototype.erase
-      expect(wouldHaveBeenErased).to.eql({ '7': true, '17': true, '22': true, '32': true });
-    });
-
-    xit("`set` alters any rows specified by the query", function () {
-      expect(FQL.prototype.set).to.be.a('function');
-      chai.spy.on(movieTable, 'write');
-      movieQuery.where({rank: 7.5}).set({rank: 'C'});
-      expect(movieTable.write).to.have.been.called.exactly(5);
-      // wouldHaveBeenWritten is internally set up by specs (see above)
-      // it keeps track of what movie ids get written to by Table.prototype.write and also what the written value would have been
-      expect(wouldHaveBeenWritten).to.eql({
-        '1': { id: 1, name: 'Animal House', year: 1978, rank: 'C' },
-        '2': { id: 2, name: 'Apollo 13', year: 1995, rank: 'C' },
-        '6': { id: 6, name: 'Few Good Men, A', year: 1992, rank: 'C' },
-        '21': { id: 21, name: 'Ocean\'s Eleven', year: 2001, rank: 'C' },
-        '23': { id: 23, name: 'Pi', year: 1998, rank: 'C' }
-      });
-    });
-
+  xit("produces results more quickly for sparse finds", function () {
+    // non-indexed
+    var nonIndexedStart = process.hrtime();
+    var nonIndexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
+    var nonIndexedDuration = process.hrtime(nonIndexedStart);
+    // indexed
+    actorTable.addIndexTable('last_name');
+    var indexedStart = process.hrtime();
+    var indexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
+    var indexedDuration = process.hrtime(indexedStart);
+    // check out the console!
+    console.log(pad('+----------------------------------+'));
+    logTime(pad(' Non-indexed query'), nonIndexedDuration);
+    logTime(pad(' Indexed query'), indexedDuration);
+    var factor = Math.round(nanosecondsOf(nonIndexedDuration) / nanosecondsOf(indexedDuration));
+    console.log(pad(' Indexed query was'), factor, 'times faster');
+    console.log(pad('+----------------------------------+'));
+    // results are the same
+    expect(nonIndexedResult).to.eql(indexedResult);
+    // indexed query should be significantly faster
+    expect(factor).to.be.greaterThan(100);
   });
 
 });

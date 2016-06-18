@@ -299,6 +299,12 @@ describe("Part II: query me this", function () {
   ********/
   describe("#joining", function () {
 
+    var roleTable, roleQuery;
+    beforeEach(function () {
+      roleTable = new Table('film-database/roles-table');
+      roleQuery = new FQL(roleTable);
+    });
+
     // this will be useful for concatenating two rows
     xit("`FQL.merge` merges two objects' key/value pairs", function () {
       expect(FQL.merge).to.be.a('function');

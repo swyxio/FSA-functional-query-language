@@ -34,7 +34,7 @@ describe("Part I: bedrock", function () {
     expect(Table.toFilename(7)).to.equal('0007.json');
   });
 
-  xit("`Table.toId` converts an filename to an ID (number)", function () {
+  xit("`Table.toId` converts a filename to an ID (number)", function () {
     expect(Table.toId).to.be.a('function');
     expect(Table.toId('4444.json')).to.equal(4444);
     expect(Table.toId('0333.json')).to.equal(333);
