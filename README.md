@@ -1,6 +1,6 @@
 ## About
 
-The goal here is to build a JavaScript class called FQL that will be a pure JavaScript implementation of SQL.  By working on this exercise, you will get a chance to explore how the inner workings of a database engine might work.
+The goal here is to build a JavaScript class called FQL that will be a pure JavaScript implementation of a (minimal) SQL-esque database management system and query language.  By working on this exercise, you will get a chance to explore how the inner workings of a database engine can work.
 
 ## Getting started
 
