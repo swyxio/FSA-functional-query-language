@@ -27,7 +27,7 @@ describe("Part II: query me this", function () {
 
   describe('#limit', function () {
 
-    xit("Plan instances (plans) hold a row limit", function () {
+    xit("`Plan` instances (plans) hold a row limit", function () {
       expect(Plan.prototype.setLimit).to.be.a('function');
     });
 
@@ -39,7 +39,7 @@ describe("Part II: query me this", function () {
       expect(plan.withinLimit(randomlySizedArray)).to.equal(true);
     });
 
-    xit("a plan can return whether a possible result is `withinLimit`", function () {
+    xit("plans can return whether a possible result is `withinLimit`", function () {
       const plan = new Plan();
       plan.setLimit(14);
       expect(plan.withinLimit([])).to.equal(true);

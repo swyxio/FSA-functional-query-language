@@ -18,6 +18,7 @@ const Plan = require('../source/plan');
 // --------------------------------------------
 describe("Part I: bedrock", function () {
 
+  // this spec should already be passing (check out the file ../source/table.js)
   xit("`Table` is a constructor that takes a folder path (don't worry about it too much yet)", function () {
     expect(Table).to.be.a('function');
     const movieTable = new Table('film-database/movies-table')
@@ -25,6 +26,8 @@ describe("Part I: bedrock", function () {
   });
 
   xit("`Table.toFilename` converts an ID to a four-digit zero-padded filename", function () {
+    // notice this method is `Table.toFilename`, not `Table.prototype.toFilename`
+    // this is what we might call a "static method" or a "class method" (http://javascript.info/tutorial/static-variables-methods-decorators#static-methods)
     expect(Table.toFilename).to.be.a('function');
     expect(Table.toFilename(3895)).to.equal('3895.json');
     expect(Table.toFilename(216)).to.equal('0216.json');
@@ -51,6 +54,13 @@ describe("Part I: bedrock", function () {
       year: 1995,
       rank: 7.5
     });
+  });
+
+  // HINT: I wonder whether we could `try` to `catch` an error?
+  xit("tables will return `undefined` for a row that does not exist", function () {
+    const movieTable = new Table('film-database/movies-table');
+    const result = movieTable.read(40);
+    expect(result).to.eql(undefined);
   });
 
   // HINT: checkout `fs.readdirSync` (https://nodejs.org/api/fs.html#fs_fs_readdirsync_path)

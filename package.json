@@ -4,7 +4,7 @@
   "description": "",
   "main": "table.js",
   "scripts": {
-    "test": "mocha specs/*.js"
+    "test": "mocha --watch specs/*.js"
   },
   "author": "",
   "license": "ISC",
