@@ -5,6 +5,8 @@ const chai = require('chai');
 chai.use(require('chai-spies'));
 const expect = require('chai').expect;
 
+const specUtils = require('../spec-utils');
+
 const Table = require('../source/table');
 const FQL = require('../source/fql');
 const Plan = require('../source/plan');
@@ -29,18 +31,9 @@ describe("Part III: (w)indexing", function () {
     actorTable = new Table('film-database/actors-table');
   });
 
-  function removeNonDataTables () {
-    const allowed = ['movies-table', 'actors-table', 'roles-table'];
-    fs.readdirSync('film-database').forEach(function (path) {
-      if (allowed.indexOf(path) == -1) {
-        rmrf.sync('film-database/' + path);
-      }
-    });
-  }
+  before(specUtils.removeNonDataTables);
 
-  before(removeNonDataTables)
-
-  afterEach(removeNonDataTables);
+  afterEach(specUtils.removeNonDataTables);
 
   xit("tables can be indexed by a column", function () {
     // `hasIndexTable`
@@ -127,7 +120,7 @@ describe("Part III: (w)indexing", function () {
     // results are the same
     expect(nonIndexedResult).to.eql(indexedResult);
     // indexed query should be significantly faster
-    expect(factor).to.be.greaterThan(100);
+    expect(factor).to.be.greaterThan(10);
   });
 
 });

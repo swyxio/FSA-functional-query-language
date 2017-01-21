@@ -5,6 +5,8 @@ const chai = require('chai');
 chai.use(require('chai-spies'));
 const expect = require('chai').expect;
 
+const specUtils = require('../spec-utils');
+
 const Table = require('../source/table');
 const FQL = require('../source/fql');
 
@@ -29,6 +31,10 @@ describe("Part IV: putting the able in table", function () {
     rmrf.sync('test-db');
   });
 
+  before(specUtils.removeNonDataTables);
+
+  afterEach(specUtils.removeNonDataTables);
+
   describe("table existence", function () {
 
     xit("creates a folder for a new table if no such folder exists yet", function () {
@@ -44,7 +50,7 @@ describe("Part IV: putting the able in table", function () {
     // HINT: check out `rimraf.sync` (https://github.com/isaacs/rimraf#rimrafsync)
     xit("`drop` deletes the whole table (folder)", function () {
       expect(Table.prototype.drop).to.be.a('function');
-      const testTable = new Table('test-db/test-table');
+      let testTable = new Table('test-db/test-table');
       testTable.drop();
       expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
       testTable = new Table('test-db/test-table');
@@ -170,7 +176,7 @@ describe("Part IV: putting the able in table", function () {
       testTable.addIndexTable('title');
       testTable.insert({title: 'delta'});
       const otherTestTableInstance = new Table('test-db/test-table');
-      const indexTableData = otherTestTableInstance.getIndexTable('title');
+      let indexTableData = otherTestTableInstance.getIndexTable('title');
       expect(indexTableData).to.have.property('delta');
       expect(indexTableData.delta).to.eql([ 11 ]);
       testTable.insert({title: 'bravo'});
