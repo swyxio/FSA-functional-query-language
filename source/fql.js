@@ -1,6 +1,4 @@
-'use strict';
-
-var Plan = require('./plan');
+const Plan = require('./plan');
 
 function FQL () {}
 

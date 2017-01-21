@@ -1,12 +1,10 @@
-'use strict';
-
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-spies'));
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
-var Table = require('../source/table');
-var FQL = require('../source/fql');
-var Plan = require('../source/plan');
+const Table = require('../source/table');
+const FQL = require('../source/fql');
+const Plan = require('../source/plan');
 
 // --------------------------------------------------
 //  _______  _______  ______    _______    ___   ___  
@@ -21,7 +19,7 @@ var Plan = require('../source/plan');
 
 describe("Part II: query me this", function () {
 
-  var movieTable, movieQuery;
+  let movieTable, movieQuery;
   beforeEach(function () {
     movieTable = new Table('film-database/movies-table');
     movieQuery = new FQL(movieTable);
@@ -35,21 +33,21 @@ describe("Part II: query me this", function () {
 
     xit("`withinLimit` always returns true if no limit has been set", function () {
       expect(Plan.prototype.withinLimit).to.be.a('function');
-      var plan = new Plan();
-      var randomInteger = Math.floor(Math.random() * 1000);
-      var randomlySizedArray = new Array(randomInteger);
+      const plan = new Plan();
+      const randomInteger = Math.floor(Math.random() * 1000);
+      const randomlySizedArray = new Array(randomInteger);
       expect(plan.withinLimit(randomlySizedArray)).to.equal(true);
     });
 
     xit("a plan can return whether a possible result is `withinLimit`", function () {
-      var plan = new Plan();
+      const plan = new Plan();
       plan.setLimit(14);
       expect(plan.withinLimit([])).to.equal(true);
-      var arrayOfThirteenThings = new Array(13);
+      const arrayOfThirteenThings = new Array(13);
       expect(plan.withinLimit(arrayOfThirteenThings)).to.equal(true);
-      var arrayOfFourteenThings = new Array(14);
+      const arrayOfFourteenThings = new Array(14);
       expect(plan.withinLimit(arrayOfFourteenThings)).to.equal(false);
-      var arrayOfABunchOfThings = new Array(76213);
+      const arrayOfABunchOfThings = new Array(76213);
       expect(plan.withinLimit(arrayOfFourteenThings)).to.equal(false);
     });
 
@@ -57,16 +55,16 @@ describe("Part II: query me this", function () {
       expect(FQL.prototype.limit).to.be.a('function');
       chai.spy.on(movieTable, 'read');
       chai.spy.on(movieTable, 'getRowIds');
-      var limitQuery = movieQuery.limit(4);
+      const limitQuery = movieQuery.limit(4);
       expect(limitQuery).to.be.instanceOf(FQL);
       expect(movieTable.read).not.to.have.been.called();
       expect(movieTable.getRowIds).not.to.have.been.called();
     });
 
     xit("queries can limit the result set", function () {
-      var limitQuery = movieQuery.limit(4);
+      const limitQuery = movieQuery.limit(4);
       chai.spy.on(limitQuery.plan, 'withinLimit');
-      var result = limitQuery.get();
+      const result = limitQuery.get();
       expect(limitQuery.plan.withinLimit).to.have.been.called.exactly(5);
       expect(result).to.eql([
         { id: 0, name: 'Aliens', year: 1986, rank: 8.2 },
@@ -92,18 +90,18 @@ describe("Part II: query me this", function () {
 
     xit("`selectColumns` takes a row and returns a row, always with the same columns and values if there are no selected columns", function () {
       expect(Plan.prototype.selectColumns).to.be.a('function');
-      var plan = new Plan();
-      var inputRow = {type: 'Tomatoe', price: 1000};
+      const plan = new Plan();
+      const inputRow = {type: 'Tomatoe', price: 1000};
       expect(plan.selectColumns(inputRow)).to.eql(inputRow);
     });
 
     xit("given to-be-selected columns, a plan's `selectColumns` will return a narrowed row", function () {
-      var planA = new Plan();
+      const planA = new Plan();
       planA.setSelected(['type']);
       expect(planA.selectColumns({type: 'Tomatoe', price: 1000})).to.eql({type: 'Tomatoe'});
-      var planB = new Plan();
+      const planB = new Plan();
       planB.setSelected(['language', 'title']);
-      var exampleRow = {title: 'The Road', author: 'Cormac McCarthy', language: 'English', rating: 9.1};
+      const exampleRow = {title: 'The Road', author: 'Cormac McCarthy', language: 'English', rating: 9.1};
       expect(planB.selectColumns(exampleRow)).to.eql({language: 'English', title: 'The Road'});
     });
 
@@ -111,20 +109,20 @@ describe("Part II: query me this", function () {
       expect(FQL.prototype.select).to.be.a('function');
       chai.spy.on(movieTable, 'read');
       chai.spy.on(movieTable, 'getRowIds');
-      var selectQuery = movieQuery.select('*');
+      const selectQuery = movieQuery.select('*');
       expect(selectQuery).to.be.instanceOf(FQL);
       expect(movieTable.read).not.to.have.been.called();
       expect(movieTable.getRowIds).not.to.have.been.called();
     });
 
     xit("queries can select all columns", function () {
-      var result = movieQuery.select('*').get();
+      const result = movieQuery.select('*').get();
       expect(result).to.have.length(36);
       expect(result[35]).to.eql({ id: 35, name: 'Vanilla Sky', year: 2001, rank: 6.9 });
     });
 
     xit("queries can select a certain column", function () {
-      var result = movieQuery.select('name').get();
+      const result = movieQuery.select('name').get();
       expect(result).to.eql([
         { name: 'Aliens' },
         { name: 'Animal House' },
@@ -166,7 +164,7 @@ describe("Part II: query me this", function () {
     });
 
     xit("queries can select multiple columns", function () {
-      var resultA = new FQL(movieTable).select('name', 'year').get();
+      const resultA = new FQL(movieTable).select('name', 'year').get();
       expect(resultA).to.have.length(36);
       expect(resultA[0]).to.eql({ name: 'Aliens', year: 1986 });
       resultA.forEach(function (row) {
@@ -175,7 +173,7 @@ describe("Part II: query me this", function () {
         expect(row).to.not.have.property('id');
         expect(row).to.not.have.property('rank');
       });
-      var resultB = new FQL(movieTable).select('rank', 'id', 'year').get();
+      const resultB = new FQL(movieTable).select('rank', 'id', 'year').get();
       expect(resultB).to.have.length(36);
       expect(resultB[0]).to.eql({ id: 0, year: 1986, rank: 8.2 });
       resultB.forEach(function (row) {
@@ -196,20 +194,20 @@ describe("Part II: query me this", function () {
 
     xit("`matchesRow` accepts a row and always returns true if there are no criteria", function () {
       expect(Plan.prototype.matchesRow).to.be.a('function');
-      var plan = new Plan();
+      const plan = new Plan();
       expect(plan.matchesRow({a: 123})).to.equal(true);
       expect(plan.matchesRow({})).to.equal(true);
       expect(plan.matchesRow({x: null, y: null})).to.equal(true);
     });
 
     xit("for a plan with criteria `matchesRow` returns true only if the given row matches all criteria column values", function () {
-      var planA = new Plan();
+      const planA = new Plan();
       planA.setCriteria({color: 'yellow'});
       expect(planA.matchesRow({color: 'yellow'})).to.equal(true);
       expect(planA.matchesRow({color: 'green'})).to.equal(false);
       expect(planA.matchesRow({color: 'purple', otherThing: 'whocares'})).to.equal(false);
       expect(planA.matchesRow({color: 'yellow', otherThing: 'whocares'})).to.equal(true);
-      var planB = new Plan();
+      const planB = new Plan();
       planB.setCriteria({style: 'Jazz', year: 1915});
       expect(planB.matchesRow({style: 'Jazz', year: 1915})).to.equal(true);
       expect(planB.matchesRow({style: 'Ragtime', year: 1899, title: 'Maple Leaf Rag'})).to.equal(false);
@@ -222,18 +220,18 @@ describe("Part II: query me this", function () {
       expect(FQL.prototype.where).to.be.a('function');
       chai.spy.on(movieTable, 'read');
       chai.spy.on(movieTable, 'getRowIds');
-      var whereQuery = movieQuery.where({rank: 7});
+      const whereQuery = movieQuery.where({rank: 7});
       expect(whereQuery).to.be.instanceOf(FQL);
       expect(movieTable.read).not.to.have.been.called();
       expect(movieTable.getRowIds).not.to.have.been.called();
     });
 
     xit("given criteria, queries can narrow the result set", function () {
-      var resultA = new FQL(movieTable).where({name: 'Shrek'}).get();
+      const resultA = new FQL(movieTable).where({name: 'Shrek'}).get();
       expect(resultA).to.eql([
         { id: 29, name: 'Shrek', year: 2001, rank: 8.1 }
       ]);
-      var resultB = new FQL(movieTable).where({year: 1999}).get();
+      const resultB = new FQL(movieTable).where({year: 1999}).get();
       expect(resultB).to.eql([
         { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
         { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 },
@@ -243,7 +241,7 @@ describe("Part II: query me this", function () {
     });
 
     xit("works with multiple fields", function () {
-      var result = movieQuery.where({
+      const result = movieQuery.where({
         rank: 8.5,
         year: 1999
       }).get();
@@ -254,7 +252,7 @@ describe("Part II: query me this", function () {
     });
 
     xit("a criterion can match a value OR use a predicate function", function () {
-      var result = movieQuery.where({
+      const result = movieQuery.where({
         name: function (nameValueForARow) {
           return nameValueForARow.toLowerCase().indexOf('e') === -1;
         }
@@ -280,7 +278,7 @@ describe("Part II: query me this", function () {
     });
 
     xit("any combination of predicates and values works", function () {
-      var result = movieQuery.where({
+      const result = movieQuery.where({
         rank: 7.5,
         year: function (yearVal) { return yearVal < 2000; }
       }).get();
@@ -299,7 +297,7 @@ describe("Part II: query me this", function () {
   ********/
   describe("#joining", function () {
 
-    var roleTable, roleQuery;
+    let roleTable, roleQuery;
     beforeEach(function () {
       roleTable = new Table('film-database/roles-table');
       roleQuery = new FQL(roleTable);
@@ -308,14 +306,14 @@ describe("Part II: query me this", function () {
     // this will be useful for concatenating two rows
     xit("`FQL.merge` merges two objects' key/value pairs", function () {
       expect(FQL.merge).to.be.a('function');
-      var merged = FQL.merge({a:1, b:2}, {a:100, c:3});
+      const merged = FQL.merge({a:1, b:2}, {a:100, c:3});
       expect(merged).to.eql({a:100, b:2, c:3});
     });
 
     // make sure `where` is working properly before attempting the next specs
     xit("queries can inner join other queries given a matching condition for the self and foreign row", function () {
       expect(FQL.prototype.innerJoin).to.be.a('function');
-      var result = movieQuery
+      const result = movieQuery
       .where({
         name: 'Shrek'
       })

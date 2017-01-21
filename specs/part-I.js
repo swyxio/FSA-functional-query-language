@@ -1,12 +1,10 @@
-'use strict';
-
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-spies'));
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
-var Table = require('../source/table');
-var FQL = require('../source/fql');
-var Plan = require('../source/plan');
+const Table = require('../source/table');
+const FQL = require('../source/fql');
+const Plan = require('../source/plan');
 
 // --------------------------------------------
 //  _______  _______  ______    _______    ___  
@@ -22,7 +20,7 @@ describe("Part I: bedrock", function () {
 
   xit("`Table` is a constructor that takes a folder path (don't worry about it too much yet)", function () {
     expect(Table).to.be.a('function');
-    var movieTable = new Table('film-database/movies-table')
+    const movieTable = new Table('film-database/movies-table')
     expect(movieTable).to.be.an.instanceOf(Table);
   });
 
@@ -45,8 +43,8 @@ describe("Part I: bedrock", function () {
   // HINT: check out `JSON.parse` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
   xit("`Table` instances (tables) can read from a folder, given an ID", function () {
     expect(Table.prototype.read).to.be.a('function');
-    var movieTable = new Table('film-database/movies-table');
-    var result = movieTable.read(2);
+    const movieTable = new Table('film-database/movies-table');
+    const result = movieTable.read(2);
     expect(result).to.eql({
       id: 2,
       name: 'Apollo 13',
@@ -58,25 +56,25 @@ describe("Part I: bedrock", function () {
   // HINT: checkout `fs.readdirSync` (https://nodejs.org/api/fs.html#fs_fs_readdirsync_path)
   xit("tables can `getRowIds`", function () {
     expect(Table.prototype.getRowIds).to.be.a('function');
-    var movieTable = new Table('film-database/movies-table');
-    var ids = movieTable.getRowIds();
+    const movieTable = new Table('film-database/movies-table');
+    const ids = movieTable.getRowIds();
     expect(ids).to.eql([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35 ]);
   });
 
   xit("`FQL` is a constructor that takes a table", function () {
-    var movieTable = new Table('film-database/movies-table')
+    const movieTable = new Table('film-database/movies-table')
     expect(FQL).to.be.a('function');
-    var movieQuery = new FQL(movieTable);
+    const movieQuery = new FQL(movieTable);
     expect(movieQuery).to.be.an.instanceOf(FQL);
   });
 
   xit("`FQL` instances (queries) can retrieve all rows from their table using `get`", function () {
     expect(FQL.prototype.get).to.be.a('function');
-    var movieTable = new Table('film-database/movies-table');
-    var movieQuery = new FQL(movieTable);
+    const movieTable = new Table('film-database/movies-table');
+    const movieQuery = new FQL(movieTable);
     chai.spy.on(movieTable, 'getRowIds');
     chai.spy.on(movieTable, 'read');
-    var result = movieQuery.get();
+    const result = movieQuery.get();
     expect(movieTable.getRowIds).to.have.been.called.exactly(1);
     expect(movieTable.read).to.have.been.called.exactly(36);
     expect(result).to.eql([
@@ -121,16 +119,16 @@ describe("Part I: bedrock", function () {
 
   xit("queries can count all rows", function () {
     expect(FQL.prototype.count).to.be.a('function');
-    var movieTable = new Table('film-database/movies-table');
-    var movieQuery = new FQL(movieTable);
-    var result = movieQuery.count();
+    const movieTable = new Table('film-database/movies-table');
+    const movieQuery = new FQL(movieTable);
+    const result = movieQuery.count();
     expect(result).to.equal(36);
   });
 
   // why do queries have a plan you ask? ...see part II
   xit("queries have a plan", function () {
-    var movieTable = new Table('film-database/movies-table');
-    var movieQuery = new FQL(movieTable);
+    const movieTable = new Table('film-database/movies-table');
+    const movieQuery = new FQL(movieTable);
     expect(movieQuery).to.have.property('plan');
     expect(movieQuery.plan).to.be.instanceOf(Plan);
   });

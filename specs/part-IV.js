@@ -1,14 +1,12 @@
-'use strict';
+const fs = require('fs');
+const rmrf = require('rimraf');
 
-var fs = require('fs');
-var rmrf = require('rimraf');
-
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-spies'));
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
-var Table = require('../source/table');
-var FQL = require('../source/fql');
+const Table = require('../source/table');
+const FQL = require('../source/fql');
 
 // ------------------------------------------------------
 //  _______  _______  ______    _______    ___   __   __ 
@@ -36,17 +34,17 @@ describe("Part IV: putting the able in table", function () {
     xit("creates a folder for a new table if no such folder exists yet", function () {
       new Table('test-db/test-table');
       // a corresponding path should now exist
-      var exists = fs.existsSync('test-db/test-table');
+      const exists = fs.existsSync('test-db/test-table');
       expect(exists).to.equal(true);
       // that path should point to a directory
-      var stats = fs.statSync('test-db/test-table');
+      const stats = fs.statSync('test-db/test-table');
       expect(stats.isDirectory()).to.equal(true);
     });
 
     // HINT: check out `rimraf.sync` (https://github.com/isaacs/rimraf#rimrafsync)
     xit("`drop` deletes the whole table (folder)", function () {
       expect(Table.prototype.drop).to.be.a('function');
-      var testTable = new Table('test-db/test-table');
+      const testTable = new Table('test-db/test-table');
       testTable.drop();
       expect(fs.existsSync('test-db/test-table')).to.equal(false); // after dropping
       testTable = new Table('test-db/test-table');
@@ -59,16 +57,16 @@ describe("Part IV: putting the able in table", function () {
 
   describe("row existence", function () {
 
-    var testTable;
+    let testTable;
     beforeEach(function () {
       testTable = new Table('test-db/test-table');
     });
 
     xit("`read` will retrieve a row added after table creation", function () {
-      var resultBefore = testTable.read(456);
+      const resultBefore = testTable.read(456);
       expect(resultBefore).to.equal(undefined);
       fs.writeFileSync('test-db/test-table/0456.json', '{"letter":"F","isFor":"functional"}');
-      var resultAfter = testTable.read(456);
+      const resultAfter = testTable.read(456);
       expect(resultAfter).to.eql({letter: 'F', isFor: 'functional'});
     });
 
@@ -85,7 +83,7 @@ describe("Part IV: putting the able in table", function () {
       expect(Table.prototype.write).to.be.a('function');
       testTable.write(123, {name: 'Oscar', role: 'grouch'});
       expect(fs.readdirSync('test-db/test-table')).to.eql(['0123.json']);
-      var fileStr = fs.readFileSync('test-db/test-table/0123.json').toString();
+      const fileStr = fs.readFileSync('test-db/test-table/0123.json').toString();
       expect(fileStr).to.equal('{"name":"Oscar","role":"grouch"}');
     });
 
@@ -93,7 +91,7 @@ describe("Part IV: putting the able in table", function () {
       expect(Table.prototype.update).to.be.a('function');
       fs.writeFileSync('test-db/test-table/0789.json', '{"title":"Sesame Street","network":"PBS"}');
       testTable.update(789, {network: 'HBO', coCreator: 'Joan Ganz Cooney'});
-      var fileStr = fs.readFileSync('test-db/test-table/0789.json').toString();
+      const fileStr = fs.readFileSync('test-db/test-table/0789.json').toString();
       expect(fileStr).to.equal('{"title":"Sesame Street","network":"HBO","coCreator":"Joan Ganz Cooney"}');
     });
 
@@ -102,9 +100,9 @@ describe("Part IV: putting the able in table", function () {
       testTable.insert({song: 'One of These Things', by: 'Joe Raposo, Jon Stone, & Bruce Hart'});
       testTable.insert({song: 'Rubber Duckie', by: 'Jeff Moss'});
       expect(fs.readdirSync('test-db/test-table')).to.eql(['0000.json', '0001.json']);
-      var fileStrA = fs.readFileSync('test-db/test-table/0000.json').toString();
+      const fileStrA = fs.readFileSync('test-db/test-table/0000.json').toString();
       expect(fileStrA).to.equal('{"song":"One of These Things","by":"Joe Raposo, Jon Stone, & Bruce Hart","id":0}');
-      var fileStrB = fs.readFileSync('test-db/test-table/0001.json').toString();
+      const fileStrB = fs.readFileSync('test-db/test-table/0001.json').toString();
       expect(fileStrB).to.equal('{"song":"Rubber Duckie","by":"Jeff Moss","id":1}');
     });
 
@@ -117,15 +115,15 @@ describe("Part IV: putting the able in table", function () {
     }
     xit("can write to and read from an already-existing table (folder)", function () {
       createFakeTableWithData();
-      var table = new Table('test-db/test-table');
-      var resultBefore = [table.read(2), table.read(3), table.read(9)];
+      const table = new Table('test-db/test-table');
+      const resultBefore = [table.read(2), table.read(3), table.read(9)];
       expect(resultBefore).to.eql([
         {a:'alpha',id:2},
         {b:'bravo',id:3},
         {c:'charlie',id:9}
       ]);
       table.insert({d:'delta'});
-      var resultAfter = [table.read(2), table.read(3), table.read(9), table.read(10)];
+      const resultAfter = [table.read(2), table.read(3), table.read(9), table.read(10)];
       expect(resultAfter).to.eql([
         {a:'alpha',id:2},
         {b:'bravo',id:3},
@@ -138,7 +136,7 @@ describe("Part IV: putting the able in table", function () {
 
   describe("enhanced indexing", function () {
 
-    var testTable;
+    let testTable;
     beforeEach(function () {
       rmrf.sync('test-db/test-table');
       fs.mkdirSync('test-db/test-table');
@@ -152,7 +150,7 @@ describe("Part IV: putting the able in table", function () {
     xit("`addIndexTable` persistently creates an index table", function () {
       testTable.addIndexTable('title'); // should trigger a *persistent* change
       // another table instance will be able to load the already-made index table
-      var otherTestTableInstance = new Table('test-db/test-table');
+      const otherTestTableInstance = new Table('test-db/test-table');
       expect(otherTestTableInstance.hasIndexTable('title')).to.equal(true);
       expect(otherTestTableInstance.getIndexTable('title')).to.eql({
         alpha: [ 2 ],
@@ -164,15 +162,15 @@ describe("Part IV: putting the able in table", function () {
     xit("`removeIndexTable` persistently removes an index table", function () {
       testTable.addIndexTable('title');
       testTable.removeIndexTable('title'); // should trigger a *persistent* change
-      var otherTestTableInstance = new Table('test-db/test-table');
+      const otherTestTableInstance = new Table('test-db/test-table');
       expect(otherTestTableInstance.hasIndexTable('title')).to.equal(false);
     });
 
     xit("`write` also updates any index tables", function () {
       testTable.addIndexTable('title');
       testTable.insert({title: 'delta'});
-      var otherTestTableInstance = new Table('test-db/test-table');
-      var indexTableData = otherTestTableInstance.getIndexTable('title');
+      const otherTestTableInstance = new Table('test-db/test-table');
+      const indexTableData = otherTestTableInstance.getIndexTable('title');
       expect(indexTableData).to.have.property('delta');
       expect(indexTableData.delta).to.eql([ 11 ]);
       testTable.insert({title: 'bravo'});
@@ -184,7 +182,7 @@ describe("Part IV: putting the able in table", function () {
     xit("`drop` also removes a table's index tables", function () {
       testTable.addIndexTable('title');
       testTable.drop();
-      var otherTestTableInstance = new Table('test-db/test-table');
+      const otherTestTableInstance = new Table('test-db/test-table');
       expect(otherTestTableInstance.hasIndexTable('title')).to.equal(false);
     });
 
@@ -192,7 +190,8 @@ describe("Part IV: putting the able in table", function () {
 
   describe("enhanced queries", function () {
 
-    var originals = {}, wouldHaveBeenWritten, wouldHaveBeenErased;
+    const originals = {};
+    let wouldHaveBeenWritten, wouldHaveBeenErased;
     beforeEach(function () {
       originals.write = Table.prototype.write;
       originals.erase = Table.prototype.erase;
@@ -210,7 +209,7 @@ describe("Part IV: putting the able in table", function () {
       Table.prototype.erase = originals.erase;
     });
 
-    var movieTable, movieQuery;
+    let movieTable, movieQuery;
     beforeEach(function () {
       movieTable = new Table('film-database/movies-table');
       movieQuery = new FQL(movieTable);

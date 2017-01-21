@@ -1,15 +1,13 @@
-'use strict';
+const fs = require('fs');
+const rmrf = require('rimraf');
 
-var fs = require('fs');
-var rmrf = require('rimraf');
-
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-spies'));
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 
-var Table = require('../source/table');
-var FQL = require('../source/fql');
-var Plan = require('../source/plan');
+const Table = require('../source/table');
+const FQL = require('../source/fql');
+const Plan = require('../source/plan');
 
 // --------------------------------------------------------
 //  _______  _______  ______    _______    ___   ___   ___  
@@ -24,7 +22,7 @@ var Plan = require('../source/plan');
 
 describe("Part III: (w)indexing", function () {
 
-  var movieTable, movieQuery, actorTable;
+  let movieTable, movieQuery, actorTable;
   beforeEach(function () {
     movieTable = new Table('film-database/movies-table');
     movieQuery = new FQL(movieTable);
@@ -32,7 +30,7 @@ describe("Part III: (w)indexing", function () {
   });
 
   function removeNonDataTables () {
-    var allowed = ['movies-table', 'actors-table', 'roles-table'];
+    const allowed = ['movies-table', 'actors-table', 'roles-table'];
     fs.readdirSync('film-database').forEach(function (path) {
       if (allowed.indexOf(path) == -1) {
         rmrf.sync('film-database/' + path);
@@ -54,7 +52,7 @@ describe("Part III: (w)indexing", function () {
     expect(movieTable.hasIndexTable('year')).to.equal(true);
     // `getIndexTable`
     expect(Table.prototype.getIndexTable).to.be.a('function');
-    var indexTable = movieTable.getIndexTable('year');
+    const indexTable = movieTable.getIndexTable('year');
     expect(indexTable).to.eql({
       1972: [ 10 ],
       1977: [ 31 ],
@@ -82,14 +80,14 @@ describe("Part III: (w)indexing", function () {
   xit("where queries take advantage of indexed columns to minimize table reads", function () {
     // non-indexed query
     chai.spy.on(movieTable, 'read');
-    var nonIndexedResult = new FQL(movieTable)
+    const nonIndexedResult = new FQL(movieTable)
     .where({year: 1999})
     .get();
     expect(movieTable.read).to.have.been.called.exactly(36);
     // indexed query
     movieTable.addIndexTable('year');
     chai.spy.on(movieTable, 'read');
-    var indexedResult = new FQL(movieTable)
+    const indexedResult = new FQL(movieTable)
     .where({year: 1999})
     .get();
     expect(movieTable.read).to.have.been.called.exactly(4);
@@ -111,19 +109,19 @@ describe("Part III: (w)indexing", function () {
 
   xit("produces results more quickly for sparse finds", function () {
     // non-indexed
-    var nonIndexedStart = process.hrtime();
-    var nonIndexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
-    var nonIndexedDuration = process.hrtime(nonIndexedStart);
+    const nonIndexedStart = process.hrtime();
+    const nonIndexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
+    const nonIndexedDuration = process.hrtime(nonIndexedStart);
     // indexed
     actorTable.addIndexTable('last_name');
-    var indexedStart = process.hrtime();
-    var indexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
-    var indexedDuration = process.hrtime(indexedStart);
+    const indexedStart = process.hrtime();
+    const indexedResult = new FQL(actorTable).where({last_name: 'Miller'}).get();
+    const indexedDuration = process.hrtime(indexedStart);
     // check out the console!
     console.log(pad('+----------------------------------+'));
     logTime(pad(' Non-indexed query'), nonIndexedDuration);
     logTime(pad(' Indexed query'), indexedDuration);
-    var factor = Math.round(nanosecondsOf(nonIndexedDuration) / nanosecondsOf(indexedDuration));
+    const factor = Math.round(nanosecondsOf(nonIndexedDuration) / nanosecondsOf(indexedDuration));
     console.log(pad(' Indexed query was'), factor, 'times faster');
     console.log(pad('+----------------------------------+'));
     // results are the same
