@@ -61,11 +61,12 @@ describe("Part II: query me this", function () {
       expect(movieTable.getRowIds).not.to.have.been.called();
     });
 
+    // note: each query will need a corresponding `Plan` instance for this to work
     xit("queries can limit the result set", function () {
       const limitQuery = movieQuery.limit(4);
-      chai.spy.on(limitQuery.plan, 'withinLimit');
+      chai.spy.on(Plan.prototype, 'withinLimit');
       const result = limitQuery.get();
-      expect(limitQuery.plan.withinLimit).to.have.been.called.exactly(5);
+      expect(Plan.prototype.withinLimit).to.have.been.called.exactly(5);
       expect(result).to.eql([
         { id: 0, name: 'Aliens', year: 1986, rank: 8.2 },
         { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },

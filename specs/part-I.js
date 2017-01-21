@@ -135,12 +135,4 @@ describe("Part I: bedrock", function () {
     expect(result).to.equal(36);
   });
 
-  // why do queries have a plan you ask? ...see part II
-  xit("queries have a plan", function () {
-    const movieTable = new Table('film-database/movies-table');
-    const movieQuery = new FQL(movieTable);
-    expect(movieQuery).to.have.property('plan');
-    expect(movieQuery.plan).to.be.instanceOf(Plan);
-  });
-
 });
