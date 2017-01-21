@@ -293,9 +293,10 @@ describe("Part II: query me this", function () {
 
   });
 
-  /********
-  * BONUS *
-  ********/
+  /****************************************
+  ***************** BONUS *****************
+  ****************************************/
+
   describe("#joining", function () {
 
     let roleTable, roleQuery;
