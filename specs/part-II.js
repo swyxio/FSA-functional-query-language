@@ -48,7 +48,7 @@ describe("Part II: query me this", function () {
       const arrayOfFourteenThings = new Array(14);
       expect(plan.withinLimit(arrayOfFourteenThings)).to.equal(false);
       const arrayOfABunchOfThings = new Array(76213);
-      expect(plan.withinLimit(arrayOfFourteenThings)).to.equal(false);
+      expect(plan.withinLimit(arrayOfABunchOfThings)).to.equal(false);
     });
 
     xit("`limit` returns a query and does not cause the query to execute, only `get` does that", function () {
