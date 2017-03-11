@@ -23,6 +23,7 @@ function addLivereloadScript (cb) {
 }
 
 const specDir = path.join(__dirname, 'specs');
+const sourceDir = path.join(__dirname, 'source');
 function runSpecs (cb) {
   // clear the cache so mocha actually re-runs all files
   Object.keys(require.cache).forEach(key => delete require.cache[key]);
@@ -53,4 +54,5 @@ function runSpecs (cb) {
 // kick the whole thing off one time at startup
 runSpecs(() => child_process.exec(`open "${reportTargetFile}"`));
 // continue watching for the future
-fs.watch('specs', () => runSpecs());
+fs.watch(specDir, () => runSpecs());
+fs.watch(sourceDir, () => runSpecs());
