@@ -4,14 +4,17 @@
   "description": "",
   "main": "table.js",
   "scripts": {
-    "test": "mocha --watch specs/*.js"
+    "test": "node test-and-watch.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-spies": "^0.7.1",
-    "mocha": "^2.4.5"
+    "livereload": "^0.6.2",
+    "mocha": "^2.4.5",
+    "mocha-simple-html-reporter": "^1.0.1",
+    "mochawesome": "^2.0.4"
   },
   "dependencies": {
     "rimraf": "^2.5.2"

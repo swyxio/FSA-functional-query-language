@@ -66,12 +66,12 @@ describe("Part II: query me this", function () {
       const limitQuery = movieQuery.limit(4);
       chai.spy.on(Plan.prototype, 'withinLimit');
       const result = limitQuery.get();
-      expect(Plan.prototype.withinLimit).to.have.been.called.exactly(5);
+      expect(Plan.prototype.withinLimit).to.have.been.called();
       expect(result).to.eql([
-        { id: 0, name: 'Aliens', year: 1986, rank: 8.2 },
-        { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },
-        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: 3, name: 'Batman Begins', year: 2005, rank: null }
+        { id: '0000', name: 'Aliens', year: 1986, rank: 8.2 },
+        { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
+        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: '0003', name: 'Batman Begins', year: 2005, rank: null }
       ]);
     });
 
@@ -79,6 +79,14 @@ describe("Part II: query me this", function () {
       chai.spy.on(movieTable, 'read');
       movieQuery.limit(8).get();
       expect(movieTable.read).to.have.been.called.exactly(8);
+    });
+
+    xit("`limit` returns a new query, it does not mutate the existing one", function () {
+      // BONUS: functional programming win
+      const limitQuery = movieQuery.limit(1);
+      const resultForOriginal = movieQuery.get();
+      // the original `movieQuery` itself remains unlimited
+      expect(resultForOriginal).to.have.length(36);
     });
 
   });
@@ -119,7 +127,7 @@ describe("Part II: query me this", function () {
     xit("queries can select all columns", function () {
       const result = movieQuery.select('*').get();
       expect(result).to.have.length(36);
-      expect(result[35]).to.eql({ id: 35, name: 'Vanilla Sky', year: 2001, rank: 6.9 });
+      expect(result[35]).to.eql({ id: '0035', name: 'Vanilla Sky', year: 2001, rank: 6.9 });
     });
 
     xit("queries can select a certain column", function () {
@@ -176,13 +184,27 @@ describe("Part II: query me this", function () {
       });
       const resultB = new FQL(movieTable).select('rank', 'id', 'year').get();
       expect(resultB).to.have.length(36);
-      expect(resultB[0]).to.eql({ id: 0, year: 1986, rank: 8.2 });
+      expect(resultB[0]).to.eql({ id: '0000', year: 1986, rank: 8.2 });
       resultB.forEach(function (row) {
         expect(row).to.have.property('rank');
         expect(row).to.have.property('id');
         expect(row).to.have.property('year');
         expect(row).to.not.have.property('name');
       });
+    });
+
+    xit("`select` returns a new query, it does not mutate the existing one", function () {
+      // BONUS: functional programming win
+      const selectQueryA = movieQuery.select('id', 'name');
+      const selectQueryB = movieQuery.select('id', 'rank');
+      const resultForOriginal = movieQuery.get();
+      const resultA = selectQueryA.get();
+      const resultB = selectQueryB.get();
+      // the original `movieQuery` itself selects all (the default)
+      expect(resultForOriginal[0]).to.eql({ id: '0000', name: 'Aliens', year: 1986, rank: 8.2 });
+      // the two select queries behave independently and as intended
+      expect(resultA[0]).to.eql({ id: '0000', name: 'Aliens' });
+      expect(resultB[0]).to.eql({ id: '0000', rank: 8.2 });
     });
 
   });
@@ -230,14 +252,14 @@ describe("Part II: query me this", function () {
     xit("given criteria, queries can narrow the result set", function () {
       const resultA = new FQL(movieTable).where({name: 'Shrek'}).get();
       expect(resultA).to.eql([
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1 }
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1 }
       ]);
       const resultB = new FQL(movieTable).where({year: 1999}).get();
       expect(resultB).to.eql([
-        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 },
-        { id: 22, name: 'Office Space', year: 1999, rank: 7.6 },
-        { id: 32, name: 'Stir of Echoes', year: 1999, rank: 7 }
+        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 },
+        { id: '0022', name: 'Office Space', year: 1999, rank: 7.6 },
+        { id: '0032', name: 'Stir of Echoes', year: 1999, rank: 7 }
       ]);
     });
 
@@ -247,8 +269,8 @@ describe("Part II: query me this", function () {
         year: 1999
       }).get();
       expect(result).to.eql([
-        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: 17, name: 'Matrix, The', year: 1999, rank: 8.5 }
+        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 }
       ]);
     });
 
@@ -260,21 +282,21 @@ describe("Part II: query me this", function () {
       }).get();
       // movies without the letter 'e' in their name
       expect(result).to.eql([
-        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: 5, name: 'Fargo', year: 1996, rank: 8.2 },
-        { id: 7, name: 'Fight Club', year: 1999, rank: 8.5 },
-        { id: 11, name: 'Hollow Man', year: 2000, rank: 5.3 },
-        { id: 12, name: 'JFK', year: 1991, rank: 7.8 },
-        { id: 13, name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
-        { id: 14, name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
-        { id: 16, name: 'Lost in Translation', year: 2003, rank: 8 },
-        { id: 23, name: 'Pi', year: 1998, rank: 7.5 },
-        { id: 26, name: 'Pulp Fiction', year: 1994, rank: 8.7 },
-        { id: 30, name: 'Snatch.', year: 2000, rank: 7.9 },
-        { id: 31, name: 'Star Wars', year: 1977, rank: 8.8 },
-        { id: 33, name: 'Titanic', year: 1997, rank: 6.9 },
-        { id: 34, name: 'UHF', year: 1989, rank: 6.6 },
-        { id: 35, name: 'Vanilla Sky', year: 2001, rank: 6.9 }
+        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: '0005', name: 'Fargo', year: 1996, rank: 8.2 },
+        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: '0011', name: 'Hollow Man', year: 2000, rank: 5.3 },
+        { id: '0012', name: 'JFK', year: 1991, rank: 7.8 },
+        { id: '0013', name: 'Kill Bill: Vol. 1', year: 2003, rank: 8.4 },
+        { id: '0014', name: 'Kill Bill: Vol. 2', year: 2004, rank: 8.2 },
+        { id: '0016', name: 'Lost in Translation', year: 2003, rank: 8 },
+        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 },
+        { id: '0026', name: 'Pulp Fiction', year: 1994, rank: 8.7 },
+        { id: '0030', name: 'Snatch.', year: 2000, rank: 7.9 },
+        { id: '0031', name: 'Star Wars', year: 1977, rank: 8.8 },
+        { id: '0033', name: 'Titanic', year: 1997, rank: 6.9 },
+        { id: '0034', name: 'UHF', year: 1989, rank: 6.6 },
+        { id: '0035', name: 'Vanilla Sky', year: 2001, rank: 6.9 }
       ]);
     });
 
@@ -284,10 +306,29 @@ describe("Part II: query me this", function () {
         year: function (yearVal) { return yearVal < 2000; }
       }).get();
       expect(result).to.eql([
-        { id: 1, name: 'Animal House', year: 1978, rank: 7.5 },
-        { id: 2, name: 'Apollo 13', year: 1995, rank: 7.5 },
-        { id: 6, name: 'Few Good Men, A', year: 1992, rank: 7.5 },
-        { id: 23, name: 'Pi', year: 1998, rank: 7.5 }
+        { id: '0001', name: 'Animal House', year: 1978, rank: 7.5 },
+        { id: '0002', name: 'Apollo 13', year: 1995, rank: 7.5 },
+        { id: '0006', name: 'Few Good Men, A', year: 1992, rank: 7.5 },
+        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 }
+      ]);
+    });
+
+    xit("`where` returns a new query, it does not mutate the existing one", function () {
+      // BONUS: functional programming win
+      const whereQueryA = movieQuery.where({name: 'Pi'});
+      const whereQueryB = movieQuery.where({rank: 8.5, year: 1999});
+      const resultForOriginal = movieQuery.get();
+      const resultA = whereQueryA.get();
+      const resultB = whereQueryB.get();
+      // the original `movieQuery` itself gets all (the default)
+      expect(resultForOriginal).to.have.length(36);
+      // the two select queries behave independently and as intended
+      expect(resultA).to.eql([
+        { id: '0023', name: 'Pi', year: 1998, rank: 7.5 }
+      ]);
+      expect(resultB).to.eql([
+        { id: '0007', name: 'Fight Club', year: 1999, rank: 8.5 },
+        { id: '0017', name: 'Matrix, The', year: 1999, rank: 8.5 }
       ]);
     });
 
@@ -324,31 +365,31 @@ describe("Part II: query me this", function () {
       })
       .get();
       expect(result).to.eql([
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1, movie_id: 29, role: 'Duloc Mascot' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 31, movie_id: 29, role: 'Merry Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 90, movie_id: 29, role: 'Bishop' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 97, movie_id: 29, role: 'Merry Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 106, movie_id: 29, role: 'Baby Bear' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 182, movie_id: 29, role: 'Pinocchio/Three Pigs' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 202, movie_id: 29, role: 'Monsieur Hood' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 278, movie_id: 29, role: 'Captain of Guards' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 318, movie_id: 29, role: 'Ogre Hunter' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 434, movie_id: 29, role: 'Peter Pan' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 476, movie_id: 29, role: 'Merry Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 706, movie_id: 29, role: 'Blind Mouse/Thelonious' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 771, movie_id: 29, role: 'Lord Farquaad of Duloc' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 906, movie_id: 29, role: 'Geppetto/Magic Mirror' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 928, movie_id: 29, role: 'Donkey' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 935, movie_id: 29, role: 'Shrek/Blind Mouse/Narrator' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1013, movie_id: 29, role: 'Ogre Hunter' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1086, movie_id: 29, role: 'Merry Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1221, movie_id: 29, role: 'Blind Mouse' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1345, movie_id: 29, role: 'Gingerbread Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1348, movie_id: 29, role: 'Merry Man' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1482, movie_id: 29, role: 'Wrestling Fan' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1561, movie_id: 29, role: 'Princess Fiona' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1598, movie_id: 29, role: 'Old Woman' },
-        { id: 29, name: 'Shrek', year: 2001, rank: 8.1, actor_id: 1602, movie_id: 29, role: 'Additional Voices' }
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0001', movie_id: '0029', role: 'Duloc Mascot' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0031', movie_id: '0029', role: 'Merry Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0090', movie_id: '0029', role: 'Bishop' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0097', movie_id: '0029', role: 'Merry Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0106', movie_id: '0029', role: 'Baby Bear' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0182', movie_id: '0029', role: 'Pinocchio/Three Pigs' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0202', movie_id: '0029', role: 'Monsieur Hood' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0278', movie_id: '0029', role: 'Captain of Guards' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0318', movie_id: '0029', role: 'Ogre Hunter' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0434', movie_id: '0029', role: 'Peter Pan' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0476', movie_id: '0029', role: 'Merry Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0706', movie_id: '0029', role: 'Blind Mouse/Thelonious' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0771', movie_id: '0029', role: 'Lord Farquaad of Duloc' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0906', movie_id: '0029', role: 'Geppetto/Magic Mirror' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0928', movie_id: '0029', role: 'Donkey' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '0935', movie_id: '0029', role: 'Shrek/Blind Mouse/Narrator' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1013', movie_id: '0029', role: 'Ogre Hunter' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1086', movie_id: '0029', role: 'Merry Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1221', movie_id: '0029', role: 'Blind Mouse' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1345', movie_id: '0029', role: 'Gingerbread Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1348', movie_id: '0029', role: 'Merry Man' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1482', movie_id: '0029', role: 'Wrestling Fan' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1561', movie_id: '0029', role: 'Princess Fiona' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1598', movie_id: '0029', role: 'Old Woman' },
+        { id: '0029', name: 'Shrek', year: 2001, rank: 8.1, actor_id: '1602', movie_id: '0029', role: 'Additional Voices' }
       ]);
     });
 
