@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const child_process = require('child_process');
 const livereload = require('livereload');
 const tripwire = require('tripwire');
+const opn = require('opn');
 const Mocha = require('mocha');
 
 // filepaths constants
@@ -38,11 +38,11 @@ function setupMochaInstance () {
   return mocha;
 }
 
-let hasOpenedAlready = false;
+let hasAttemptedOpen = false;
 function openOnce () {
-  if (hasOpenedAlready) return;
-  child_process.exec(`open "${reportTargetFile}"`);
-  hasOpenedAlready = true;
+  if (hasAttemptedOpen) return;
+  hasAttemptedOpen = true;
+  opn(reportTargetFile);
 }
 
 function runSpecs () {

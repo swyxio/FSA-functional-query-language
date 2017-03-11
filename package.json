@@ -14,6 +14,7 @@
     "livereload": "^0.6.2",
     "mocha": "^2.4.5",
     "mocha-simple-html-reporter": "^1.0.1",
+    "opn": "^4.0.2",
     "tripwire": "^4.1.0"
   },
   "dependencies": {
