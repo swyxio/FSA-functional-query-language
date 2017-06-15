@@ -12,4 +12,21 @@ specUtils.removeNonDataTables = function () {
   });
 };
 
+specUtils.tryPromise = function (fn) {
+  return new Promise(function (resolve, reject) {
+    let result, error;
+    try {
+      result = fn();
+    } catch (_error)  {
+      error = _error;
+    }
+    if (error) return reject(error);
+    if (result && typeof result.then === 'function') {
+      result.then(resolve, reject);
+    } else {
+      resolve(result);
+    }
+  });
+};
+
 module.exports = specUtils;
