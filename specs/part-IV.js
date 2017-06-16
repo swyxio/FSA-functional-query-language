@@ -11,13 +11,13 @@ const Table = require('../source/table');
 const FQL = require('../source/fql');
 
 // ------------------------------------------------------
-//  _______  _______  ______    _______    ___   __   __ 
+//  _______  _______  ______    _______    ___   __   __
 // |       ||   _   ||    _ |  |       |  |   | |  | |  |
 // |    _  ||  |_|  ||   | ||  |_     _|  |   | |  |_|  |
 // |   |_| ||       ||   |_||_   |   |    |   | |       |
 // |    ___||       ||    __  |  |   |    |   | |       |
-// |   |    |   _   ||   |  | |  |   |    |   |  |     | 
-// |___|    |__| |__||___|  |_|  |___|    |___|   |___|  
+// |   |    |   _   ||   |  | |  |   |    |   |  |     |
+// |___|    |__| |__||___|  |_|  |___|    |___|   |___|
 //
 // ------------------------------------------------------
 
@@ -124,17 +124,17 @@ describe("Part IV: putting the able in table", function () {
       const table = new Table('test-db/test-table');
       const resultBefore = [table.read('0002'), table.read('0003'), table.read('0009')];
       expect(resultBefore).to.eql([
-        {a:'alpha',id:'0002'},
-        {b:'bravo',id:'0003'},
-        {c:'charlie',id:'0009'}
+        {a: 'alpha', id: '0002'},
+        {b: 'bravo', id: '0003'},
+        {c: 'charlie', id: '0009'}
       ]);
-      table.insert({d:'delta'});
+      table.insert({d: 'delta'});
       const resultAfter = [table.read('0002'), table.read('0003'), table.read('0009'), table.read('0010')];
       expect(resultAfter).to.eql([
-        {a:'alpha',id:'0002'},
-        {b:'bravo',id:'0003'},
-        {c:'charlie',id:'0009'},
-        {d:'delta',id:'0010'} // auto-incrementer counts up from the previous maximum
+        {a: 'alpha', id: '0002'},
+        {b: 'bravo', id: '0003'},
+        {c: 'charlie', id: '0009'},
+        {d: 'delta', id: '0010'} // auto-incrementer counts up from the previous maximum
       ]);
     });
 
@@ -181,7 +181,7 @@ describe("Part IV: putting the able in table", function () {
       expect(indexTableData.delta).to.eql([ '0011' ]);
       testTable.insert({title: 'bravo'});
       indexTableData = otherTestTableInstance.getIndexTable('title');
-      expect(indexTableData).to.have.property('bravo')
+      expect(indexTableData).to.have.property('bravo');
       expect(indexTableData.bravo).to.eql(['0003', '0010', '0012']);
     });
 

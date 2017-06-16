@@ -7,13 +7,13 @@ const FQL = require('../source/fql');
 const Plan = require('../source/plan');
 
 // --------------------------------------------------
-//  _______  _______  ______    _______    ___   ___  
-// |       ||   _   ||    _ |  |       |  |   | |   | 
-// |    _  ||  |_|  ||   | ||  |_     _|  |   | |   | 
-// |   |_| ||       ||   |_||_   |   |    |   | |   | 
-// |    ___||       ||    __  |  |   |    |   | |   | 
-// |   |    |   _   ||   |  | |  |   |    |   | |   | 
-// |___|    |__| |__||___|  |_|  |___|    |___| |___| 
+//  _______  _______  ______    _______    ___   ___
+// |       ||   _   ||    _ |  |       |  |   | |   |
+// |    _  ||  |_|  ||   | ||  |_     _|  |   | |   |
+// |   |_| ||       ||   |_||_   |   |    |   | |   |
+// |    ___||       ||    __  |  |   |    |   | |   |
+// |   |    |   _   ||   |  | |  |   |    |   | |   |
+// |___|    |__| |__||___|  |_|  |___|    |___| |___|
 //
 // --------------------------------------------------
 
@@ -83,7 +83,7 @@ describe("Part II: query me this", function () {
 
     xit("`limit` returns a new query, it does not mutate the existing one", function () {
       // BONUS: functional programming win
-      const limitQuery = movieQuery.limit(1);
+      movieQuery.limit(1);
       const resultForOriginal = movieQuery.get();
       // the original `movieQuery` itself remains unlimited
       expect(resultForOriginal).to.have.length(36);
@@ -349,8 +349,8 @@ describe("Part II: query me this", function () {
     // this will be useful for concatenating two rows
     xit("`FQL.merge` merges two objects' key/value pairs", function () {
       expect(FQL.merge).to.be.a('function');
-      const merged = FQL.merge({a:1, b:2}, {a:100, c:3});
-      expect(merged).to.eql({a:100, b:2, c:3});
+      const merged = FQL.merge({a: 1, b: 2}, {a: 100, c: 3});
+      expect(merged).to.eql({a: 100, b: 2, c: 3});
     });
 
     // make sure `where` is working properly before attempting the next specs

@@ -1,6 +1,3 @@
-const fs = require('fs');
-const rmrf = require('rimraf');
-
 const chai = require('chai');
 chai.use(require('chai-spies'));
 const expect = require('chai').expect;
@@ -9,25 +6,23 @@ const specUtils = require('../spec-utils');
 
 const Table = require('../source/table');
 const FQL = require('../source/fql');
-const Plan = require('../source/plan');
 
 // --------------------------------------------------------
-//  _______  _______  ______    _______    ___   ___   ___  
-// |       ||   _   ||    _ |  |       |  |   | |   | |   | 
-// |    _  ||  |_|  ||   | ||  |_     _|  |   | |   | |   | 
-// |   |_| ||       ||   |_||_   |   |    |   | |   | |   | 
-// |    ___||       ||    __  |  |   |    |   | |   | |   | 
-// |   |    |   _   ||   |  | |  |   |    |   | |   | |   | 
-// |___|    |__| |__||___|  |_|  |___|    |___| |___| |___| 
+//  _______  _______  ______    _______    ___   ___   ___
+// |       ||   _   ||    _ |  |       |  |   | |   | |   |
+// |    _  ||  |_|  ||   | ||  |_     _|  |   | |   | |   |
+// |   |_| ||       ||   |_||_   |   |    |   | |   | |   |
+// |    ___||       ||    __  |  |   |    |   | |   | |   |
+// |   |    |   _   ||   |  | |  |   |    |   | |   | |   |
+// |___|    |__| |__||___|  |_|  |___|    |___| |___| |___|
 //
 // --------------------------------------------------------
 
 describe("Part III: (w)indexing", function () {
 
-  let movieTable, movieQuery, actorTable;
+  let movieTable, actorTable;
   beforeEach(function () {
     movieTable = new Table('film-database/movies-table');
-    movieQuery = new FQL(movieTable);
     actorTable = new Table('film-database/actors-table');
   });
 
@@ -89,11 +84,11 @@ describe("Part III: (w)indexing", function () {
   });
 
   function nanosecondsOf (time) {
-    return time[0] * 1e9 + time[1]; 
+    return time[0] * 1e9 + time[1];
   }
 
   function logTime (label, time) {
-    console.log(label, nanosecondsOf(time)/1e6, 'ms');
+    console.log(label, nanosecondsOf(time) / 1e6, 'ms');
   }
 
   function pad (str) {

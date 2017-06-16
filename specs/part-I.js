@@ -4,24 +4,24 @@ const expect = require('chai').expect;
 
 const Table = require('../source/table');
 const FQL = require('../source/fql');
-const Plan = require('../source/plan');
 
 // --------------------------------------------
-//  _______  _______  ______    _______    ___  
-// |       ||   _   ||    _ |  |       |  |   | 
-// |    _  ||  |_|  ||   | ||  |_     _|  |   | 
-// |   |_| ||       ||   |_||_   |   |    |   | 
-// |    ___||       ||    __  |  |   |    |   | 
-// |   |    |   _   ||   |  | |  |   |    |   | 
-// |___|    |__| |__||___|  |_|  |___|    |___| 
+//  _______  _______  ______    _______    ___
+// |       ||   _   ||    _ |  |       |  |   |
+// |    _  ||  |_|  ||   | ||  |_     _|  |   |
+// |   |_| ||       ||   |_||_   |   |    |   |
+// |    ___||       ||    __  |  |   |    |   |
+// |   |    |   _   ||   |  | |  |   |    |   |
+// |___|    |__| |__||___|  |_|  |___|    |___|
 //
 // --------------------------------------------
+
 describe("Part I: bedrock", function () {
 
   xit("`Table` is a constructor that takes a folder path (don't worry about it too much yet)", function () {
     // this spec should already be passing (check out the file ../source/table.js)
     expect(Table).to.be.a('function');
-    const movieTable = new Table('film-database/movies-table')
+    const movieTable = new Table('film-database/movies-table');
     expect(movieTable).to.be.an.instanceOf(Table);
   });
 
@@ -58,6 +58,7 @@ describe("Part I: bedrock", function () {
 
   xit("tables will return `undefined` for a row that does not exist", function () {
     // HINT: I wonder whether we could `try` to `catch` an error?
+    // ALTERNATIVE HINT: `fs.existsSync` (https://nodejs.org/api/fs.html#fs_fs_existssync_path)
     const movieTable = new Table('film-database/movies-table');
     const result = movieTable.read('0040');
     expect(result).to.eql(undefined);
@@ -68,11 +69,11 @@ describe("Part I: bedrock", function () {
     expect(Table.prototype.getRowIds).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
     const ids = movieTable.getRowIds();
-    expect(ids).to.eql(['0000','0001','0002','0003','0004','0005','0006','0007','0008','0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018', '0019', '0020', '0021', '0022', '0023', '0024', '0025', '0026', '0027', '0028', '0029', '0030', '0031', '0032', '0033', '0034', '0035' ]);
+    expect(ids).to.eql(['0000', '0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018', '0019', '0020', '0021', '0022', '0023', '0024', '0025', '0026', '0027', '0028', '0029', '0030', '0031', '0032', '0033', '0034', '0035' ]);
   });
 
   xit("`FQL` is a constructor that takes a table", function () {
-    const movieTable = new Table('film-database/movies-table')
+    const movieTable = new Table('film-database/movies-table');
     expect(FQL).to.be.a('function');
     const movieQuery = new FQL(movieTable);
     expect(movieQuery).to.be.an.instanceOf(FQL);
