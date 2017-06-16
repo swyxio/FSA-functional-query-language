@@ -4,6 +4,9 @@ const livereload = require('livereload');
 const tripwire = require('tripwire');
 const opn = require('opn');
 const Mocha = require('mocha');
+const interceptStdOut = require('intercept-stdout');
+const AnsiToHtml = require('ansi-to-html');
+const ansiToHtml = new AnsiToHtml();
 
 const specUtils = require('./spec-utils');
 
@@ -39,6 +42,53 @@ function openOnce () {
   opn(reportTargetFile);
 }
 
+// to keep out mocha runner logs
+function captureExclusionFilter (text) {
+  return text.startsWith('The report is written in');
+}
+
+// start the stdout intercepter
+let capturedHtml = '';
+let interceptStopper;
+function captureStdOutAsHtml () {
+  stopCapturing();
+  interceptStopper = interceptStdOut(function (text) {
+    if (captureExclusionFilter(text)) return;
+    // conversion is primarily to maintain any coloration in stdout
+    capturedHtml += ansiToHtml.toHtml(text);
+  });
+}
+
+// stop the stdout intercepter
+function stopCapturing () {
+  if (interceptStopper) interceptStopper();
+}
+
+// return the captured html and reset it to emptiness, also stop capturing
+function consumeCapturedHtmlAndStopCapturing () {
+  stopCapturing();
+  const toReturn = capturedHtml;
+  capturedHtml = '';
+  return toReturn;
+}
+
+// stupid sipmle (regex) parse html for div with id mocha and prepend some html inside it
+const mochaDivPattern = /id="mocha">/g;
+function prependToMocha (html, toPrepend) {
+  return html.replace(mochaDivPattern, function (match) {
+    return match + toPrepend;
+  });
+}
+
+function consumePrependAndStopCapture (existingHtmlOutput) {
+  return prependToMocha(existingHtmlOutput, `
+    <h1>Console Output</h1>
+    <pre>${consumeCapturedHtmlAndStopCapturing() || '(none)'}</pre>
+    <hr>
+    <h1>Specs</h1>
+  `);
+}
+
 // actually executes the specs and returns a promise for some html
 function mochaHtmlOutput (mocha) {
   return new Promise(function (resolve, reject) {
@@ -68,7 +118,7 @@ function tryMochaHtmlOutput () {
 
 // format an error for how it will display to the user
 function formatErrorForHtmlOutput (error) {
-  return `<h2>${error.message}</h2><pre>${error.stack}</pre>`;
+  return `<h2>Error: ${error.message}</h2><pre>${error.stack}</pre>`;
 }
 
 // append live reload script to some existing html
@@ -79,8 +129,10 @@ function addLivereloadScript (existingHtmlOutput) {
 
 // html output maybe from mocha or from an error in attempting to run the specs
 function generateHtmlOutput () {
+  captureStdOutAsHtml();
   return tryMochaHtmlOutput()
   .catch(formatErrorForHtmlOutput)
+  .then(consumePrependAndStopCapture)
   .then(addLivereloadScript);
 }
 
