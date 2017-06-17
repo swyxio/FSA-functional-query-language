@@ -83,7 +83,7 @@ function prependToMocha (html, toPrepend) {
 function consumePrependAndStopCapture (existingHtmlOutput) {
   return prependToMocha(existingHtmlOutput, `
     <h1>Console Output</h1>
-    <pre>${consumeCapturedHtmlAndStopCapturing() || '(none)'}</pre>
+    <pre style="font-size: 0.6em;">${consumeCapturedHtmlAndStopCapturing() || '(none)'}</pre>
     <hr>
     <h1>Specs</h1>
   `);
