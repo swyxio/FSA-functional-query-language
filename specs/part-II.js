@@ -61,8 +61,8 @@ describe("Part II: query me this", function () {
       expect(movieTable.getRowIds).not.to.have.been.called();
     });
 
-    // note: each query will need a corresponding `Plan` instance for this to work
     xit("queries can limit the result set", function () {
+      // note: each query will presumably need a corresponding `Plan` instance for this to work
       const limitQuery = movieQuery.limit(4);
       chai.spy.on(Plan.prototype, 'withinLimit');
       const result = limitQuery.get();
@@ -346,15 +346,15 @@ describe("Part II: query me this", function () {
       roleQuery = new FQL(roleTable);
     });
 
-    // this will be useful for concatenating two rows
     xit("`FQL.merge` merges two objects' key/value pairs", function () {
+      // this will be useful for concatenating two rows
       expect(FQL.merge).to.be.a('function');
       const merged = FQL.merge({a: 1, b: 2}, {a: 100, c: 3});
       expect(merged).to.eql({a: 100, b: 2, c: 3});
     });
 
-    // make sure `where` is working properly before attempting the next specs
     xit("queries can inner join other queries given a matching condition for the self and foreign row", function () {
+      // make sure `where` is working properly before attempting
       expect(FQL.prototype.innerJoin).to.be.a('function');
       const result = movieQuery
       .where({
