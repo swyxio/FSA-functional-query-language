@@ -37,7 +37,7 @@ describe("Part IV: putting the able in table", function () {
 
   describe("table existence", function () {
 
-    xit("creates a folder for a new table if no such folder exists yet", function () {
+    it("creates a folder for a new table if no such folder exists yet", function () {
       new Table('test-db/test-table');
       // a corresponding path should now exist
       const exists = fs.existsSync('test-db/test-table');
@@ -47,7 +47,7 @@ describe("Part IV: putting the able in table", function () {
       expect(stats.isDirectory()).to.equal(true);
     });
 
-    xit("`drop` deletes the whole table (folder)", function () {
+    it("`drop` deletes the whole table (folder)", function () {
       // HINT: check out `rimraf.sync` (https://github.com/isaacs/rimraf#rimrafsync)
       expect(Table.prototype.drop).to.be.a('function');
       let testTable = new Table('test-db/test-table');
@@ -68,7 +68,7 @@ describe("Part IV: putting the able in table", function () {
       testTable = new Table('test-db/test-table');
     });
 
-    xit("`read` will retrieve a row added after table creation", function () {
+    it("`read` will retrieve a row added after table creation", function () {
       const resultBefore = testTable.read('0456');
       expect(resultBefore).to.equal(undefined);
       fs.writeFileSync('test-db/test-table/0456.json', '{"letter":"F","isFor":"functional"}');
@@ -76,7 +76,7 @@ describe("Part IV: putting the able in table", function () {
       expect(resultAfter).to.eql({letter: 'F', isFor: 'functional'});
     });
 
-    xit("`erase` removes a particular row", function () {
+    it("`erase` removes a particular row", function () {
       // HINT: check out `fs.unlink` (https://nodejs.org/api/fs.html#fs_fs_unlinksync_path)
       expect(Table.prototype.erase).to.be.a('function');
       fs.writeFileSync('test-db/test-table/0987.json', '{"name":"Roosevelt Franklin","role":"student"}');
@@ -84,7 +84,7 @@ describe("Part IV: putting the able in table", function () {
       expect(fs.existsSync('test-db/test-table/0987.json')).to.equal(false);
     });
 
-    xit("`write` stores the given data as a JSON string in a file of the given name", function () {
+    it("`write` stores the given data as a JSON string in a file of the given name", function () {
       // HINT: check out `JSON.stringify` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
       expect(Table.prototype.write).to.be.a('function');
       testTable.write('0123', {name: 'Oscar', role: 'grouch'});
@@ -93,7 +93,7 @@ describe("Part IV: putting the able in table", function () {
       expect(fileStr).to.equal('{"name":"Oscar","role":"grouch"}');
     });
 
-    xit("`update` sets particular columns for a particular row", function () {
+    it("`update` sets particular columns for a particular row", function () {
       expect(Table.prototype.update).to.be.a('function');
       fs.writeFileSync('test-db/test-table/0789.json', '{"title":"Sesame Street","network":"PBS"}');
       testTable.update('0789', {network: 'HBO', coCreator: 'Joan Ganz Cooney'});
@@ -101,7 +101,7 @@ describe("Part IV: putting the able in table", function () {
       expect(fileStr).to.equal('{"title":"Sesame Street","network":"HBO","coCreator":"Joan Ganz Cooney"}');
     });
 
-    xit("`insert` writes the row data using an auto-incrementing ID", function () {
+    it("`insert` writes the row data using an auto-incrementing ID", function () {
       expect(Table.prototype.insert).to.be.a('function');
       testTable.insert({song: 'One of These Things', by: 'Joe Raposo, Jon Stone, & Bruce Hart'});
       testTable.insert({song: 'Rubber Duckie', by: 'Jeff Moss'});
@@ -119,7 +119,7 @@ describe("Part IV: putting the able in table", function () {
       fs.writeFileSync('test-db/test-table/0003.json', '{"b":"bravo","id":"0003"}');
       fs.writeFileSync('test-db/test-table/0009.json', '{"c":"charlie","id":"0009"}');
     }
-    xit("can write to and read from an already-existing table (folder)", function () {
+    it("can write to and read from an already-existing table (folder)", function () {
       createFakeTableWithData();
       const table = new Table('test-db/test-table');
       const resultBefore = [table.read('0002'), table.read('0003'), table.read('0009')];

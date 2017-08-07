@@ -18,14 +18,14 @@ const FQL = require('../source/fql');
 
 describe("Part I: bedrock", function () {
 
-  xit("`Table` is a constructor that takes a folder path (don't worry about it too much yet)", function () {
+  it("`Table` is a constructor that takes a folder path (don't worry about it too much yet)", function () {
     // this spec should already be passing (check out the file ../source/table.js)
     expect(Table).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
     expect(movieTable).to.be.an.instanceOf(Table);
   });
 
-  xit("`Table.toFilename` converts an ID to a JSON filename", function () {
+  it("`Table.toFilename` converts an ID to a JSON filename", function () {
     // notice this method is `Table.toFilename`, not `Table.prototype.toFilename`
     // this is what we might call a "static method" or a "class method" (http://javascript.info/tutorial/static-variables-methods-decorators#static-methods)
     expect(Table.toFilename).to.be.a('function');
@@ -35,7 +35,7 @@ describe("Part I: bedrock", function () {
     expect(Table.toFilename('0007')).to.equal('0007.json');
   });
 
-  xit("`Table.toId` converts a filename to an ID (no extension)", function () {
+  it("`Table.toId` converts a filename to an ID (no extension)", function () {
     expect(Table.toId).to.be.a('function');
     expect(Table.toId('4444.json')).to.equal('4444');
     expect(Table.toId('0333.json')).to.equal('0333');
@@ -43,7 +43,7 @@ describe("Part I: bedrock", function () {
     expect(Table.toId('0001.json')).to.equal('0001');
   });
 
-  xit("`Table` instances (tables) can read from a folder, given an ID", function () {
+  it("`Table` instances (tables) can read from a folder, given an ID", function () {
     // HINT: check out `JSON.parse` (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
     expect(Table.prototype.read).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
@@ -56,7 +56,7 @@ describe("Part I: bedrock", function () {
     });
   });
 
-  xit("tables will return `undefined` for a row that does not exist", function () {
+  it("tables will return `undefined` for a row that does not exist", function () {
     // HINT: I wonder whether we could `try` to `catch` an error?
     // ALTERNATIVE HINT: `fs.existsSync` (https://nodejs.org/api/fs.html#fs_fs_existssync_path)
     const movieTable = new Table('film-database/movies-table');
@@ -64,7 +64,7 @@ describe("Part I: bedrock", function () {
     expect(result).to.eql(undefined);
   });
 
-  xit("tables can `getRowIds`", function () {
+  it("tables can `getRowIds`", function () {
     // HINT: checkout `fs.readdirSync` (https://nodejs.org/api/fs.html#fs_fs_readdirsync_path)
     expect(Table.prototype.getRowIds).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
@@ -72,14 +72,14 @@ describe("Part I: bedrock", function () {
     expect(ids).to.eql(['0000', '0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0016', '0017', '0018', '0019', '0020', '0021', '0022', '0023', '0024', '0025', '0026', '0027', '0028', '0029', '0030', '0031', '0032', '0033', '0034', '0035' ]);
   });
 
-  xit("`FQL` is a constructor that takes a table", function () {
+  it("`FQL` is a constructor that takes a table", function () {
     const movieTable = new Table('film-database/movies-table');
     expect(FQL).to.be.a('function');
     const movieQuery = new FQL(movieTable);
     expect(movieQuery).to.be.an.instanceOf(FQL);
   });
 
-  xit("`FQL` instances (queries) can retrieve all rows from their table using `get`", function () {
+  it("`FQL` instances (queries) can retrieve all rows from their table using `get`", function () {
     expect(FQL.prototype.get).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
     const movieQuery = new FQL(movieTable);
@@ -128,7 +128,7 @@ describe("Part I: bedrock", function () {
     ]);
   });
 
-  xit("queries can count all rows", function () {
+  it("queries can count all rows", function () {
     expect(FQL.prototype.count).to.be.a('function');
     const movieTable = new Table('film-database/movies-table');
     const movieQuery = new FQL(movieTable);
