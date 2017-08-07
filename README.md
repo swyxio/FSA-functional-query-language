@@ -1,3 +1,16 @@
+# Comments from swyx
+
+some thoughts on this process:
+- i really learned what Object.assign does for cloning and merging objects. very interesting and useful
+- the reason you need to clone objects is because you need to copy the metadata on queries when you produce a new query (without mutating the old) for the purposes of chaining
+- thank god the entire `fs` library has synchronous versions
+- i definitely cut corners on some implementations in the interests of time. in particular, mixing queries is compeltely untested and this would not be acceptable IRL.
+- mocha/chai is amazing.
+
+this was a challenging exercise (as with all cs saturdays classes. to try this out for yourself, clear out the `source` folder and fulfil the test specs yourself using the instructions below.
+
+---
+
 ## About
 
 The goal here is to build a JavaScript class called FQL that will be a pure JavaScript implementation of a (minimal) SQL-esque database management system and query language.  By working on this exercise, you will get a chance to explore how the inner workings of a database engine can work.
