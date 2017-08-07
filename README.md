@@ -7,8 +7,9 @@ some thoughts on this process:
 - i definitely cut corners on some implementations in the interests of time. in particular, mixing queries is compeltely untested and this would not be acceptable IRL.
 - mocha/chai is amazing.
 
-this was a challenging exercise (as with all cs saturdays classes. to try this out for yourself, clear out the `source` folder and fulfil the test specs yourself using the instructions below.
+this was a challenging exercise (as with all cs saturdays classes). to try this out for yourself, clear out the `source` folder and fulfil the test specs yourself using the instructions below.
 
+# FSA instructions
 ---
 
 ## About
